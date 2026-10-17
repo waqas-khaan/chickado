@@ -15,14 +15,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  turbopack: {
-    rules: {
-      "*.css": {
-        loaders: ["@tailwindcss/turbopack"],
-        as: "*.css",
-      },
-    },
-  },
   allowedDevOrigins: [
     'chickado.falconsoftwares.com',
     '*.falconsoftwares.com',
