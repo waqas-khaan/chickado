@@ -1,20 +1,11 @@
 {
-  "files.exclude": {
-    "**/.git": true,
-    "**/.next": true,
-    "**/out": true
+  "html.validate.scripts": false,
+  "search.exclude": {
+    "**/out": true,
+    "**/.next": true
   },
   "files.watcherExclude": {
-    "**/.git/objects/**": true,
-    "**/.git/subtree-cache/**": true,
-    "**/node_modules/*/**": true,
-    "**/.next/**": true,
-    "**/out/**": true
-  },
-  "search.exclude": {
-    "**/node_modules": true,
-    "**/bower_components": true,
-    "**/.next": true,
-    "**/out": true
+    "**/out/**": true,
+    "**/.next/**": true
   }
 }
