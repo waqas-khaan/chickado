@@ -11,6 +11,14 @@ interface OrderSuccessProps {
   params: Promise<{ orderNumber: string }>;
 }
 
+export function generateStaticParams() {
+  return [
+    { orderNumber: 'confirmed' },
+  ];
+}
+
+export const dynamicParams = false;
+
 export default async function OrderSuccessPage({ params }: OrderSuccessProps) {
   const { orderNumber } = await params;
 

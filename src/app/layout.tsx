@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { Inter, Poppins } from 'next/font/google';
 import './globals.css';
 import Navbar from '@/components/navbar';
 import TopAnnouncementBar from '@/components/top-announcement-bar';
@@ -7,19 +6,6 @@ import Footer from '@/components/footer';
 import CartDrawer from '@/components/cart-drawer';
 import FloatingWhatsAppButton from '@/components/whatsapp-floating';
 import { brandConfig } from '@/lib/brand';
-
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-inter',
-  display: 'swap',
-});
-
-const poppins = Poppins({
-  weight: ['500', '600', '700', '800', '900'],
-  subsets: ['latin'],
-  variable: '--font-poppins',
-  display: 'swap',
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL(brandConfig.appUrl),
@@ -49,7 +35,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${poppins.variable} h-full antialiased`}>
+    <html lang="en" suppressHydrationWarning className="h-full antialiased font-sans">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Poppins:wght@500;600;700;800;900&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body suppressHydrationWarning className="min-h-full flex flex-col bg-[#FAFAFA] text-neutral-900 selection:bg-red-600 selection:text-white relative overflow-x-hidden font-sans">
         {/* Soft Ambient Blurred Red/Amber Blobs for Glass UI Depth */}
         <div className="fixed -top-40 -left-40 w-[34rem] h-[34rem] bg-red-500/10 rounded-full blur-[100px] pointer-events-none -z-10" />

@@ -24,6 +24,7 @@ import { formatCurrency } from '@/lib/format';
 import { WhatsAppIcon } from '@/components/social-icons';
 import { brandConfig } from '@/lib/brand';
 import { getWhatsAppOrderUrl, WhatsAppOrderDetails } from '@/lib/whatsapp';
+import { validatePromoCode } from '@/data/menu-data';
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -65,27 +66,24 @@ export default function CheckoutPage() {
   const total = getTotal();
   const itemCount = getItemCount();
 
-  const handleApplyPromo = async () => {
+  const handleApplyPromo = () => {
     if (!promoInput.trim()) return;
     setPromoLoading(true);
     setPromoError('');
 
     try {
-      const res = await fetch(
-        `/api/promos/validate?code=${encodeURIComponent(promoInput.trim())}&subtotal=${subtotal}`
-      );
-      const data = await res.json();
+      const result = validatePromoCode(promoInput.trim(), subtotal);
 
-      if (!res.ok || !data.valid) {
-        setPromoError(data.error || 'Invalid or expired coupon');
+      if (!result.valid || !result.promo) {
+        setPromoError(result.error || 'Invalid or expired coupon');
         return;
       }
 
       applyPromo({
-        code: data.promo.code,
-        type: data.promo.type,
-        value: data.promo.value,
-        calculatedDiscount: data.calculatedDiscount,
+        code: result.promo.code,
+        type: result.promo.type,
+        value: result.promo.value,
+        calculatedDiscount: result.calculatedDiscount || 0,
       });
       setPromoInput('');
     } catch {
