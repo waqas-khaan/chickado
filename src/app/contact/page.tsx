@@ -41,9 +41,6 @@ export default function ContactPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Card 1: Address & Directions */}
           <div className="p-7 glass-card glass-card-hover rounded-3xl space-y-3">
-            <div className="w-12 h-12 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center">
-              <MapPin className="w-6 h-6 stroke-[2.2]" />
-            </div>
             <h3 className="text-base font-black text-neutral-900">Flagship Address</h3>
             <p className="text-xs text-neutral-600 leading-relaxed font-medium">
               {brandConfig.address}
@@ -62,9 +59,6 @@ export default function ContactPage() {
 
           {/* Card 2: Phone & Email */}
           <div className="p-7 glass-card glass-card-hover rounded-3xl space-y-3">
-            <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
-              <Phone className="w-6 h-6 stroke-[2.2]" />
-            </div>
             <h3 className="text-base font-black text-neutral-900">Direct Contact</h3>
             <div className="space-y-2 text-xs">
               <div className="flex items-center gap-2">
@@ -95,9 +89,6 @@ export default function ContactPage() {
 
           {/* Card 3: Social Channels */}
           <div className="p-7 glass-card glass-card-hover rounded-3xl space-y-3">
-            <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center">
-              <InstagramIcon className="w-6 h-6 text-pink-600" />
-            </div>
             <h3 className="text-base font-black text-neutral-900">Official Socials</h3>
             <div className="space-y-2 text-xs">
               <a

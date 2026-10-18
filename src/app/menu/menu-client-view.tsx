@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
+import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
 import { Search, Flame, Filter, X } from 'lucide-react';
 import ItemModal from '@/components/item-modal';
@@ -17,6 +18,27 @@ interface CategoryType {
   items: ItemType[];
 }
 
+function getCategoryIcon(slug: string) {
+  switch (slug) {
+    case 'burgers':
+      return '🍔';
+    case 'fried-chicken':
+      return '🍗';
+    case 'wings':
+      return '🌶️';
+    case 'deals-combos':
+      return '🔥';
+    case 'sides-dips':
+      return '🍟';
+    case 'drinks':
+      return '🥤';
+    case 'desserts':
+      return '🍰';
+    default:
+      return '🍗';
+  }
+}
+
 export default function MenuClientView({ categories }: { categories: CategoryType[] }) {
   const searchParams = useSearchParams();
   const initialCat = searchParams.get('category') || 'all';
@@ -28,40 +50,164 @@ export default function MenuClientView({ categories }: { categories: CategoryTyp
 
   const { addItem } = useCartStore();
 
+  const isManualScrolling = useRef(false);
+  const manualScrollTimeout = useRef<NodeJS.Timeout | null>(null);
+  const tabButtonRefs = useRef<{ [key: string]: HTMLButtonElement | null }>({});
+
   // Flatten all items
   const allItems = useMemo(() => {
     return categories.flatMap((c) => c.items);
   }, [categories]);
 
-  // Filter & Sort
-  const filteredItems = useMemo(() => {
-    let result = allItems;
+  // Group, filter & sort items by category
+  const filteredCategories = useMemo(() => {
+    const q = searchQuery.toLowerCase().trim();
 
-    // Filter by Category
-    if (activeCategory !== 'all') {
-      result = result.filter((item) => item.category?.slug === activeCategory);
+    return categories
+      .map((cat) => {
+        let items = cat.items;
+
+        if (q) {
+          items = items.filter(
+            (item) =>
+              item.name.toLowerCase().includes(q) ||
+              (item.description && item.description.toLowerCase().includes(q)) ||
+              (item.category && item.category.name.toLowerCase().includes(q))
+          );
+        }
+
+        if (sortBy === 'price-asc') {
+          items = [...items].sort((a, b) => Number(a.price) - Number(b.price));
+        } else if (sortBy === 'price-desc') {
+          items = [...items].sort((a, b) => Number(b.price) - Number(a.price));
+        }
+
+        return {
+          ...cat,
+          items,
+        };
+      })
+      .filter((cat) => cat.items.length > 0);
+  }, [categories, searchQuery, sortBy]);
+
+  const totalVisibleItems = useMemo(() => {
+    return filteredCategories.reduce((acc, cat) => acc + cat.items.length, 0);
+  }, [filteredCategories]);
+
+  // Scrollspy: update active category as items scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      if (isManualScrolling.current) return;
+
+      const sections = document.querySelectorAll<HTMLElement>('.category-section');
+      if (!sections.length) return;
+
+      // Check if user is scrolled near top of items list
+      const container = document.getElementById('menu-items-container');
+      if (container) {
+        const containerRect = container.getBoundingClientRect();
+        // If container top is well below the sticky bar, activate 'all'
+        if (containerRect.top > 220) {
+          setActiveCategory('all');
+          return;
+        }
+      }
+
+      // Check if scrolled near the bottom of the page
+      if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 60) {
+        const lastSection = sections[sections.length - 1];
+        const lastSlug = lastSection?.getAttribute('data-category-slug');
+        if (lastSlug && lastSlug !== activeCategory) {
+          setActiveCategory(lastSlug);
+        }
+        return;
+      }
+
+      // Target threshold line just below the sticky header (~160px from viewport top)
+      const targetOffset = 180;
+      let matchedSlug = '';
+
+      for (let i = 0; i < sections.length; i++) {
+        const section = sections[i];
+        const rect = section.getBoundingClientRect();
+
+        // Section is currently crossing our trigger line
+        if (rect.top <= targetOffset && rect.bottom > targetOffset) {
+          matchedSlug = section.getAttribute('data-category-slug') || '';
+          break;
+        }
+      }
+
+      // If no section directly straddles targetOffset, find the closest section above it
+      if (!matchedSlug) {
+        for (let i = sections.length - 1; i >= 0; i--) {
+          const rect = sections[i].getBoundingClientRect();
+          if (rect.top <= targetOffset) {
+            matchedSlug = sections[i].getAttribute('data-category-slug') || '';
+            break;
+          }
+        }
+      }
+
+      if (matchedSlug && matchedSlug !== activeCategory) {
+        setActiveCategory(matchedSlug);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [activeCategory, filteredCategories]);
+
+  // Keep active category button visible in horizontal scroll track
+  useEffect(() => {
+    const activeBtn = tabButtonRefs.current[activeCategory];
+    if (activeBtn) {
+      activeBtn.scrollIntoView({
+        behavior: 'smooth',
+        inline: 'center',
+        block: 'nearest',
+      });
     }
+  }, [activeCategory]);
 
-    // Filter by Search Query
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase().trim();
-      result = result.filter(
-        (item) =>
-          item.name.toLowerCase().includes(q) ||
-          (item.description && item.description.toLowerCase().includes(q)) ||
-          (item.category && item.category.name.toLowerCase().includes(q))
-      );
+  // Smooth scroll to category on tab click
+  const handleCategoryClick = (slug: string) => {
+    setActiveCategory(slug);
+    isManualScrolling.current = true;
+    if (manualScrollTimeout.current) {
+      clearTimeout(manualScrollTimeout.current);
     }
+    manualScrollTimeout.current = setTimeout(() => {
+      isManualScrolling.current = false;
+    }, 850);
 
-    // Sort
-    if (sortBy === 'price-asc') {
-      result = [...result].sort((a, b) => Number(a.price) - Number(b.price));
-    } else if (sortBy === 'price-desc') {
-      result = [...result].sort((a, b) => Number(b.price) - Number(a.price));
+    if (slug === 'all') {
+      const container = document.getElementById('menu-items-container');
+      if (container) {
+        const y = container.getBoundingClientRect().top + window.scrollY - 150;
+        window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    } else {
+      const el = document.getElementById(`category-${slug}`);
+      if (el) {
+        const y = el.getBoundingClientRect().top + window.scrollY - 150;
+        window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+      }
     }
+  };
 
-    return result;
-  }, [allItems, activeCategory, searchQuery, sortBy]);
+  // Handle direct URL query param (e.g. ?category=deals-combos)
+  useEffect(() => {
+    const initialCategory = searchParams.get('category');
+    if (initialCategory && initialCategory !== 'all') {
+      const timer = setTimeout(() => {
+        handleCategoryClick(initialCategory);
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [searchParams]);
 
   const handleQuickAdd = (item: ItemType, e: React.MouseEvent) => {
     e.preventDefault();
@@ -128,17 +274,20 @@ export default function MenuClientView({ categories }: { categories: CategoryTyp
       <PromoBanner fullWidth />
 
       {/* Main Content Area */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
-        {/* Sticky Category Tabs Bar */}
-        <div className="sticky top-20 z-30 bg-white border border-neutral-200/80 rounded-2xl shadow-xs p-3 mb-8">
-          <div className="flex items-center justify-between gap-4 overflow-x-auto scrollbar-none">
+      <div className="max-w-7xl 2xl:max-w-[1480px] mx-auto px-3 sm:px-6 lg:px-8 pt-6 sm:pt-8">
+        {/* Sticky Category Tabs Bar with Auto-Scrollspy */}
+        <div className="sticky top-20 z-30 bg-white border border-neutral-200/80 rounded-2xl shadow-sm p-2.5 sm:p-3 mb-8 backdrop-blur-md bg-white/95">
+          <div className="flex items-center justify-between gap-4 overflow-x-auto scrollbar-none py-0.5">
             {/* Category Pills */}
             <div className="flex items-center gap-2 shrink-0">
               <button
-                onClick={() => setActiveCategory('all')}
-                className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer ${
+                ref={(el) => {
+                  tabButtonRefs.current['all'] = el;
+                }}
+                onClick={() => handleCategoryClick('all')}
+                className={`px-3.5 sm:px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
                   activeCategory === 'all'
-                    ? 'bg-red-600 text-white shadow-md'
+                    ? 'bg-red-600 text-white shadow-md shadow-red-600/20 scale-[1.02]'
                     : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
                 }`}
               >
@@ -150,10 +299,13 @@ export default function MenuClientView({ categories }: { categories: CategoryTyp
                 return (
                   <button
                     key={c.id}
-                    onClick={() => setActiveCategory(c.slug)}
-                    className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer ${
+                    ref={(el) => {
+                      tabButtonRefs.current[c.slug] = el;
+                    }}
+                    onClick={() => handleCategoryClick(c.slug)}
+                    className={`px-3.5 sm:px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
                       active
-                        ? 'bg-red-600 text-white shadow-md'
+                        ? 'bg-red-600 text-white shadow-md shadow-red-600/20 scale-[1.02]'
                         : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
                     }`}
                   >
@@ -179,8 +331,8 @@ export default function MenuClientView({ categories }: { categories: CategoryTyp
           </div>
         </div>
 
-        {/* Items Grid Matching Reference Image 2 */}
-        {filteredItems.length === 0 ? (
+        {/* Items Grouped by Category with Scrollspy */}
+        {totalVisibleItems === 0 ? (
           <div className="py-20 text-center space-y-4 bg-white rounded-3xl border border-neutral-200/80 p-8">
             <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center text-neutral-400 mx-auto">
               <Search className="w-8 h-8 text-red-500" />
@@ -200,14 +352,65 @@ export default function MenuClientView({ categories }: { categories: CategoryTyp
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6 gap-y-12 pb-12">
-            {filteredItems.map((item) => (
-              <MenuItemCard
-                key={item.id}
-                item={item}
-                onSelect={(selected) => setSelectedItem(selected)}
-                onQuickAdd={handleQuickAdd}
-              />
+          <div id="menu-items-container" className="space-y-12 sm:space-y-16 pb-16">
+            {filteredCategories.map((category) => (
+              <section
+                key={category.id}
+                id={`category-${category.slug}`}
+                data-category-slug={category.slug}
+                className="category-section scroll-mt-36"
+              >
+                {/* Professional Category Banner Header */}
+                <div className="relative overflow-hidden bg-gradient-to-r from-white via-white to-red-50/30 rounded-2xl sm:rounded-3xl border border-neutral-200/80 shadow-[0_2px_14px_rgba(0,0,0,0.03)] p-3.5 sm:p-5 mb-5 sm:mb-7 group transition-all duration-300">
+                  {/* Left Brand Gradient Border */}
+                  <div className="absolute left-0 top-0 bottom-0 w-1.5 sm:w-2 bg-gradient-to-b from-red-600 via-red-500 to-amber-500 rounded-l-2xl sm:rounded-l-3xl" />
+
+                  {/* Iconic Chickado 3 Red Stripes (Top Right) */}
+                  <div className="absolute top-0 right-4 sm:right-6 flex items-center gap-1 opacity-75 pointer-events-none">
+                    <div className="w-1.5 h-3 bg-red-600 rounded-b-xs" />
+                    <div className="w-1.5 h-3 bg-red-600 rounded-b-xs" />
+                    <div className="w-1.5 h-3 bg-red-600 rounded-b-xs" />
+                  </div>
+
+                  <div className="flex items-center justify-between gap-3 sm:gap-4 pl-2 sm:pl-3">
+                    {/* Left: Category Icon + Title + Description */}
+                    <div className="flex items-start sm:items-center gap-3 sm:gap-4 min-w-0">
+                      <div className="w-10 h-10 sm:w-13 sm:h-13 rounded-xl sm:rounded-2xl bg-gradient-to-br from-red-50 to-amber-50 border border-red-100 flex items-center justify-center shrink-0 shadow-xs text-xl sm:text-2xl group-hover:scale-105 transition-transform duration-300">
+                        {getCategoryIcon(category.slug)}
+                      </div>
+
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+                          <h2 className="text-lg sm:text-2xl font-black text-neutral-900 uppercase font-heading tracking-tight">
+                            {category.name}
+                          </h2>
+                          <span className="inline-flex items-center gap-1 text-[10px] sm:text-xs font-black text-red-600 bg-red-50 border border-red-200/70 px-2 sm:px-2.5 py-0.5 rounded-full shadow-2xs whitespace-nowrap">
+                            <span className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse" />
+                            {category.items.length} {category.items.length === 1 ? 'item' : 'items'}
+                          </span>
+                        </div>
+                        {category.description && (
+                          <p className="text-[11px] sm:text-xs md:text-sm text-neutral-500 mt-0.5 sm:mt-1 leading-snug sm:leading-relaxed line-clamp-2 sm:line-clamp-none max-w-xl">
+                            {category.description}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 5 items per row on desktop, 2 items on mobile */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5 gap-3 sm:gap-3.5 lg:gap-4 gap-y-7 sm:gap-y-9">
+                  {category.items.map((item) => (
+                    <MenuItemCard
+                      key={item.id}
+                      item={item}
+                      onSelect={(selected) => setSelectedItem(selected)}
+                      onQuickAdd={handleQuickAdd}
+                    />
+                  ))}
+                </div>
+              </section>
             ))}
           </div>
         )}
