@@ -340,7 +340,7 @@ export const MENU_CATEGORIES: Category[] = [
     name: 'Sides & Dips',
     slug: 'sides',
     description: 'Crinkle cut fries, loaded melted cheese platters, and authentic dipping sauces.',
-    image: 'https://images.unsplash.com/photo-1576107232684-1279f3908594?auto=format&fit=crop&w=800&q=80',
+    image: 'https://images.unsplash.com/photo-1541592106381-b31e9677c0e5?auto=format&fit=crop&w=800&q=80',
     sortOrder: 5,
     items: [
       {

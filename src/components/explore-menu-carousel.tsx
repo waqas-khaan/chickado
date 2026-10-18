@@ -80,38 +80,49 @@ export default function ExploreMenuCarousel({ categories }: ExploreMenuCarouselP
           {/* Scrollable Track */}
           <div
             ref={scrollContainerRef}
-            className="flex items-stretch gap-4 sm:gap-6 overflow-x-auto scrollbar-none py-3 px-2 scroll-smooth"
+            className="flex items-stretch gap-4 sm:gap-6 overflow-x-auto scrollbar-none py-4 px-2 scroll-smooth"
           >
             {categories.map((cat) => (
               <Link
                 key={cat.id}
                 href={`/menu?category=${cat.slug}`}
-                className="shrink-0 w-44 sm:w-52 bg-white rounded-2xl border-2 border-amber-400 hover:border-amber-500 shadow-[0_4px_16px_rgba(0,0,0,0.05)] hover:shadow-xl hover:shadow-amber-500/15 hover:-translate-y-1.5 transition-all duration-300 flex flex-col items-center justify-between p-4 sm:p-5 text-center relative group cursor-pointer"
+                style={{ borderRadius: '50% 50% 50% 18px' }}
+                className="relative shrink-0 w-40 sm:w-48 md:w-52 aspect-[1/1.08] bg-white border-2 border-amber-400 hover:border-amber-500 shadow-[0_4px_18px_rgba(0,0,0,0.05)] hover:shadow-xl hover:shadow-amber-500/15 hover:-translate-y-1.5 transition-all duration-300 flex flex-col items-center justify-between pt-4 sm:pt-5 pb-5 sm:pb-6 px-3.5 sm:px-4 text-center group cursor-pointer overflow-hidden select-none"
               >
-                {/* Food Image */}
-                <div className="relative w-28 h-28 sm:w-36 sm:h-36 my-1 flex items-center justify-center">
+                {/* Food Image sitting in the top dome */}
+                <div className="relative w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 my-auto flex items-center justify-center">
                   {cat.image ? (
-                    <div className="w-full h-full relative rounded-full overflow-hidden shadow-sm border border-neutral-100 bg-neutral-50 group-hover:scale-105 transition-transform duration-500">
+                    <div className="relative w-full h-full rounded-full overflow-hidden bg-neutral-50/60 group-hover:scale-108 transition-transform duration-500 ease-out flex items-center justify-center">
                       <Image
                         src={cat.image}
                         alt={cat.name}
                         fill
                         unoptimized
-                        sizes="160px"
-                        className="object-cover"
+                        sizes="(max-width: 640px) 112px, 140px"
+                        className="object-cover group-hover:scale-105 transition-transform duration-500"
                       />
                     </div>
                   ) : (
-                    <div className="w-24 h-24 rounded-full bg-red-50 text-red-600 flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform">
-                      <Flame className="w-10 h-10" />
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-red-50 text-red-600 flex items-center justify-center shadow-inner group-hover:scale-108 transition-transform duration-300">
+                      <Flame className="w-8 h-8 sm:w-10 sm:h-10" />
                     </div>
                   )}
                 </div>
 
-                {/* Category Title matching Reference Image 1 */}
-                <h3 className="text-xs sm:text-sm font-black text-neutral-900 group-hover:text-amber-600 transition tracking-wider uppercase mt-3 line-clamp-1">
-                  {cat.name}
-                </h3>
+                {/* Bottom Content: Category Name + Red Accent Underline Bar */}
+                <div className="w-full flex flex-col items-center pt-1 pb-1">
+                  <h3 className="text-xs sm:text-sm md:text-[15px] font-bold text-neutral-900 group-hover:text-red-600 transition-colors tracking-tight text-center px-1 line-clamp-1">
+                    {cat.name}
+                  </h3>
+                  {/* Signature Solid Red Accent Pill Bar */}
+                  <div className="w-9 sm:w-11 h-1 sm:h-1.5 bg-red-600 rounded-full mt-1.5 sm:mt-2 group-hover:w-14 transition-all duration-300" />
+                </div>
+
+                {/* Signature Bottom-Right Dot Indicator */}
+                <div
+                  aria-hidden="true"
+                  className="absolute bottom-2.5 right-2.5 sm:bottom-3 sm:right-3 w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full bg-[#E4E7EB] group-hover:bg-red-500 group-hover:scale-110 transition-all duration-300 shadow-2xs pointer-events-none"
+                />
               </Link>
             ))}
           </div>
