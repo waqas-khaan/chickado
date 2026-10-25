@@ -12,6 +12,7 @@ import {
   ChevronRight,
   ChevronDown,
   ArrowUpDown,
+  ArrowRight,
 } from 'lucide-react';
 import ItemModal from '@/components/item-modal';
 import MenuItemCard, { ItemType } from '@/components/menu-item-card';
@@ -141,10 +142,7 @@ export default function MenuClientView({ categories }: { categories: CategoryTyp
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const t = setTimeout(() => {
-      setMounted(true);
-    }, 350);
-    return () => clearTimeout(t);
+    setMounted(true);
   }, []);
 
   const isManualScrolling = useRef(false);
@@ -202,12 +200,23 @@ export default function MenuClientView({ categories }: { categories: CategoryTyp
       .filter((cat) => !cat.isComingSoon && cat.items.length > 0);
   }, [categories, searchQuery, sortBy]);
 
-  const totalVisibleItems = useMemo(() => {
-    return filteredCategories.reduce((acc, cat) => acc + cat.items.length, 0);
-  }, [filteredCategories]);
+  // When a specific category is selected, show only that category's items. If 'all', show all categories.
+  const displayedCategories = useMemo(() => {
+    if (activeCategory === 'all') {
+      return filteredCategories;
+    }
+    const matched = filteredCategories.filter((cat) => cat.slug === activeCategory);
+    return matched.length > 0 ? matched : filteredCategories;
+  }, [filteredCategories, activeCategory]);
 
-  // Scrollspy: update active category as items scroll
+  const totalVisibleItems = useMemo(() => {
+    return displayedCategories.reduce((acc, cat) => acc + cat.items.length, 0);
+  }, [displayedCategories]);
+
+  // Scrollspy: update active category as items scroll ONLY when viewing all items
   useEffect(() => {
+    if (activeCategory !== 'all') return;
+
     const handleScroll = () => {
       if (isManualScrolling.current) return;
 
@@ -282,44 +291,34 @@ export default function MenuClientView({ categories }: { categories: CategoryTyp
     }
   }, [activeCategory]);
 
-  // Smooth scroll to category on tab click
+  // Switch category and smooth scroll
   const handleCategoryClick = (slug: string) => {
     setActiveCategory(slug);
+    if (typeof window !== 'undefined') {
+      const url = slug === 'all' ? '/menu' : `/menu?category=${slug}`;
+      window.history.replaceState(null, '', url);
+    }
     isManualScrolling.current = true;
     if (manualScrollTimeout.current) {
       clearTimeout(manualScrollTimeout.current);
     }
     manualScrollTimeout.current = setTimeout(() => {
       isManualScrolling.current = false;
-    }, 850);
+    }, 400);
 
     const scrollBuffer = 175;
-
-    if (slug === 'all') {
-      const container = document.getElementById('menu-items-container');
-      if (container) {
-        const y = container.getBoundingClientRect().top + window.scrollY - scrollBuffer;
-        window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
-      } else {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
-    } else {
-      const el = document.getElementById(`category-${slug}`);
-      if (el) {
-        const y = el.getBoundingClientRect().top + window.scrollY - scrollBuffer;
-        window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
-      }
+    const container = document.getElementById('menu-items-container');
+    if (container) {
+      const y = container.getBoundingClientRect().top + window.scrollY - scrollBuffer;
+      window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
     }
   };
 
   // Handle direct URL query param (e.g. ?category=deals-combos)
   useEffect(() => {
     const initialCategory = searchParams.get('category');
-    if (initialCategory && initialCategory !== 'all') {
-      const timer = setTimeout(() => {
-        handleCategoryClick(initialCategory);
-      }, 300);
-      return () => clearTimeout(timer);
+    if (initialCategory) {
+      setActiveCategory(initialCategory);
     }
   }, [searchParams]);
 
@@ -372,7 +371,13 @@ export default function MenuClientView({ categories }: { categories: CategoryTyp
               type="text"
               placeholder="Search burgers, wings, pizzas..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => {
+                const val = e.target.value;
+                setSearchQuery(val);
+                if (val.trim() && activeCategory !== 'all') {
+                  setActiveCategory('all');
+                }
+              }}
               className="w-full pl-10 pr-9 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-red-600 focus:bg-white transition"
             />
             {searchQuery && (
@@ -545,7 +550,30 @@ export default function MenuClientView({ categories }: { categories: CategoryTyp
           </div>
         ) : (
           <div id="menu-items-container" className="space-y-12 sm:space-y-16 pb-16">
-            {filteredCategories.map((category) => (
+            {/* Filter Status Alert Banner when a single category is active */}
+            {activeCategory !== 'all' && (
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-4 py-3 bg-white/90 backdrop-blur-md rounded-2xl border border-neutral-200/90 shadow-2xs">
+                <div className="flex items-center gap-2.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-red-600 animate-pulse" />
+                  <span className="text-xs font-black uppercase tracking-wider text-neutral-900">
+                    Showing {displayedCategories[0]?.name || activeCategory}
+                  </span>
+                  <span className="text-[11px] font-bold text-neutral-500">
+                    ({totalVisibleItems} {totalVisibleItems === 1 ? 'item' : 'items'})
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleCategoryClick('all')}
+                  className="inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100/80 px-3.5 py-1.5 rounded-xl border border-red-200/60 transition active:scale-95 cursor-pointer self-start sm:self-auto"
+                >
+                  <span>Show All Categories</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            )}
+
+            {displayedCategories.map((category, catIdx) => (
               <section
                 key={category.id}
                 id={`category-${category.slug}`}
@@ -666,10 +694,11 @@ export default function MenuClientView({ categories }: { categories: CategoryTyp
 
                 {/* 5 items per row on desktop, 2 items on mobile */}
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5 gap-3 sm:gap-3.5 lg:gap-4 gap-y-7 sm:gap-y-9">
-                  {category.items.map((item) => (
+                  {category.items.map((item, itemIdx) => (
                     <MenuItemCard
                       key={item.id}
                       item={item}
+                      priority={catIdx === 0 && itemIdx < 5}
                       onSelect={(selected) => setSelectedItem(selected)}
                       onQuickAdd={handleQuickAdd}
                     />

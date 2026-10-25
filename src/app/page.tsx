@@ -13,7 +13,6 @@ import { brandConfig } from '@/lib/brand';
 import { formatCurrency } from '@/lib/format';
 import { getAllCategories, getFeaturedItems, getDeals } from '@/data/menu-data';
 import HomeClientSection from './home-client-section';
-import ExploreMenuCarousel from '@/components/explore-menu-carousel';
 import PromoBanner from '@/components/promo-banner';
 import MobileAppBanner from '@/components/mobile-app-banner';
 import { WhatsAppIcon } from '@/components/social-icons';
@@ -33,13 +32,12 @@ export default function HomePage() {
       {/* 1. HERO BANNER: Baked Pasta Promotional Billboard Banner */}
       <PromoBanner />
 
-      {/* 2. EXPLORE MENU CAROUSEL */}
-      <section className="py-6 sm:py-8 bg-transparent relative">
-        <ExploreMenuCarousel categories={categories} />
-      </section>
-
-      {/* 3. FEATURED PRODUCTS & POPULAR CRUNCH BITES */}
-      <HomeClientSection featuredItems={featuredItems} deals={deals} />
+      {/* 2. EXPLORE MENU & INTERACTIVE CATEGORY ITEMS */}
+      <HomeClientSection
+        categories={categories}
+        featuredItems={featuredItems}
+        deals={deals}
+      />
 
       {/* 4. WHY CHOOSE CHICKADO (Glass Cards on Off-White) */}
       <section className="py-20 bg-neutral-50/80 border-b border-neutral-200/80 relative overflow-hidden">
