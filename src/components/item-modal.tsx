@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import { X, Plus, Minus, Check, Flame, ShoppingBag } from 'lucide-react';
 import { formatCurrency } from '@/lib/format';
@@ -30,6 +31,11 @@ export default function ItemModal({ item, isOpen, onClose }: ItemModalProps) {
   const [selectedAddons, setSelectedAddons] = useState<Array<{ id: string; name: string; price: number }>>([]);
   const [quantity, setQuantity] = useState(1);
   const [notes, setNotes] = useState('');
+  const [mounted, setMounted] = useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Sync default variant when modal opens
   React.useEffect(() => {
@@ -46,7 +52,22 @@ export default function ItemModal({ item, isOpen, onClose }: ItemModalProps) {
     }
   }, [item]);
 
-  if (!isOpen || !item) return null;
+  // Synchronize body class for hiding navbar & floating elements when modal is open
+  React.useEffect(() => {
+    if (isOpen) {
+      document.body.classList.add('item-modal-open');
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.classList.remove('item-modal-open');
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.classList.remove('item-modal-open');
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
+
+  if (!isOpen || !item || !mounted) return null;
 
   // Calculate unit price
   let basePrice = Number(item.price);
@@ -98,8 +119,14 @@ export default function ItemModal({ item, isOpen, onClose }: ItemModalProps) {
     window.open(waUrl, '_blank');
   };
 
-  return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-neutral-900/60 backdrop-blur-md flex items-center justify-center p-4">
+  return createPortal(
+    <div
+      id="item-modal-dialog"
+      data-item-modal="true"
+      role="dialog"
+      aria-modal="true"
+      className="fixed inset-0 z-[100] overflow-y-auto bg-neutral-900/60 backdrop-blur-md flex items-center justify-center p-3 sm:p-4"
+    >
       <div className="glass-modal max-w-lg w-full overflow-hidden shadow-2xl animate-scaleUp text-neutral-900">
         {/* Header Image */}
         <div className="relative h-64 w-full bg-neutral-950 overflow-hidden">
@@ -247,51 +274,70 @@ export default function ItemModal({ item, isOpen, onClose }: ItemModalProps) {
         </div>
 
         {/* Modal Footer */}
-        <div className="p-4 sm:p-6 bg-white/80 border-t border-white/50 backdrop-blur-md flex items-center justify-between gap-4">
-          {/* Quantity Stepper */}
-          <div className="flex items-center border border-neutral-200 rounded-xl bg-white p-1 shadow-xs">
-            <button
-              onClick={() => setQuantity(Math.max(1, quantity - 1))}
-              className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-neutral-100 text-neutral-700 active:scale-95 transition"
-              aria-label="Decrease quantity"
-            >
-              <Minus className="w-4 h-4" />
-            </button>
-            <span className="w-10 text-center font-black text-sm text-neutral-900">
-              {quantity}
-            </span>
-            <button
-              onClick={() => setQuantity(quantity + 1)}
-              className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-neutral-100 text-neutral-700 active:scale-95 transition"
-              aria-label="Increase quantity"
-            >
-              <Plus className="w-4 h-4" />
-            </button>
+        <div className="p-3.5 sm:p-5 bg-white border-t border-neutral-200/80 shadow-lg flex flex-col gap-2.5">
+          {/* Top Row: Stepper and Unit/Total Price */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] font-black uppercase tracking-wider text-neutral-500">
+                Qty
+              </span>
+              <div className="flex items-center border border-neutral-200 rounded-xl bg-neutral-50 p-1 shadow-xs">
+                <button
+                  type="button"
+                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-white text-neutral-700 active:scale-95 transition cursor-pointer"
+                  aria-label="Decrease quantity"
+                >
+                  <Minus className="w-3.5 h-3.5" />
+                </button>
+                <span className="w-8 text-center font-black text-sm text-neutral-900">
+                  {quantity}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setQuantity(quantity + 1)}
+                  className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-white text-neutral-700 active:scale-95 transition cursor-pointer"
+                  aria-label="Increase quantity"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-xs font-semibold text-neutral-400">Total:</span>
+              <span className="text-lg font-black text-red-600 font-heading">
+                {formatCurrency(totalPrice)}
+              </span>
+            </div>
           </div>
 
-          {/* Add to Cart CTA */}
-          <button
-            type="button"
-            onClick={handleAddToCart}
-            className="flex-1 btn-red py-3.5 px-3 sm:px-4 flex items-center justify-center gap-1.5 text-xs sm:text-sm font-black"
-          >
-            <ShoppingBag className="w-4 h-4" />
-            <span>Add to Cart</span>
-          </button>
+          {/* Bottom Row: Full-width / Side-by-Side CTAs */}
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={handleAddToCart}
+              className="flex-1 btn-red py-3 px-3 sm:px-4 flex items-center justify-center gap-2 text-xs sm:text-sm font-black whitespace-nowrap shadow-md active:scale-[0.98] transition cursor-pointer rounded-xl"
+            >
+              <ShoppingBag className="w-4 h-4 shrink-0" />
+              <span>Add to Cart</span>
+              <span className="text-white/80 font-normal">•</span>
+              <span>{formatCurrency(totalPrice)}</span>
+            </button>
 
-          {/* Direct Order on WhatsApp CTA */}
-          <button
-            type="button"
-            onClick={handleOrderOnWhatsApp}
-            className="btn-whatsapp py-3.5 px-3.5 sm:px-4 flex items-center justify-center gap-1.5 text-xs sm:text-sm font-black shadow-md rounded-xl"
-            title="Order this item directly on WhatsApp with photo"
-          >
-            <WhatsAppIcon className="w-4 h-4" />
-            <span className="hidden sm:inline">WhatsApp Order</span>
-            <span className="sm:hidden">WhatsApp</span>
-          </button>
+            <button
+              type="button"
+              onClick={handleOrderOnWhatsApp}
+              className="btn-whatsapp py-3 px-3.5 sm:px-4 flex items-center justify-center gap-1.5 text-xs sm:text-sm font-bold shadow-md rounded-xl shrink-0 whitespace-nowrap active:scale-[0.98] transition cursor-pointer"
+              title="Order this item directly on WhatsApp"
+            >
+              <WhatsAppIcon className="w-4 h-4 shrink-0" />
+              <span className="hidden xs:inline">WhatsApp</span>
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
