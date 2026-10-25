@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { ShoppingBag, Phone, Menu, X, MessageCircle } from 'lucide-react';
+import { ShoppingBag, Phone, Menu, X, MessageCircle, BookOpen } from 'lucide-react';
 import BucketCartIcon from '@/components/bucket-cart-icon';
 import { brandConfig } from '@/lib/brand';
 import { useCartStore } from '@/lib/cart-store';
@@ -57,7 +57,7 @@ export default function Navbar() {
   return (
     <header
       suppressHydrationWarning
-      className={`sticky top-0 z-40 transition-all duration-300 bg-white border-b border-neutral-200/90 ${
+      className={`sticky top-0 z-40 transition-all duration-300 bg-white/85 backdrop-blur-xl border-b border-white/60 ${
         scrolled ? 'h-16 shadow-md' : 'h-20 shadow-xs'
       }`}
     >
@@ -115,6 +115,18 @@ export default function Navbar() {
                 </Link>
               );
             })}
+
+            {/* Menu Book PDF Button */}
+            <a
+              href="/menu-book/chickado-menu.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-heading font-black tracking-wider transition bg-gradient-to-r from-red-600 via-amber-600 to-red-600 text-white shadow-sm hover:shadow-red-600/30 hover:scale-105 active:scale-95 ml-1 border border-amber-400/30 cursor-pointer"
+              title="Open Official Chickado Menu PDF"
+            >
+              <BookOpen className="w-3.5 h-3.5" />
+              <span>MENU BOOK</span>
+            </a>
           </nav>
 
           {/* Action CTAs: Bucket Cart Button, Mobile Hamburger */}
@@ -167,6 +179,7 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
+
             <div className="pt-3 border-t border-neutral-200/80 flex flex-col gap-2">
               <a
                 href={`tel:${brandConfig.phone}`}

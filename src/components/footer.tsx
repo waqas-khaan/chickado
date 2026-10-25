@@ -3,11 +3,16 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import { MapPin, Phone, Clock, MessageSquare, Navigation } from 'lucide-react';
 import { InstagramIcon, TikTokIcon, YouTubeIcon, FacebookIcon, WhatsAppIcon } from '@/components/social-icons';
 import { brandConfig } from '@/lib/brand';
 
 export default function Footer() {
+  const pathname = usePathname();
+
+  if (pathname === '/') return null;
+
   return (
     <footer className="relative bg-white/85 backdrop-blur-xl text-neutral-600 pt-16 pb-8 border-t border-neutral-200/80 shadow-[0_-8px_30px_rgba(220,38,38,0.02)] overflow-hidden">
       {/* Subtle Ambient Red Glow for Depth */}

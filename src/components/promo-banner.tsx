@@ -1,165 +1,183 @@
 'use client';
 
-import React, { useState } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { Flame, Sparkles, ArrowRight, Copy, Check, Star } from 'lucide-react';
-import { WhatsAppIcon } from '@/components/social-icons';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { brandConfig } from '@/lib/brand';
 
 interface PromoBannerProps {
-  voucherCode?: string;
-  discountText?: string;
   className?: string;
   fullWidth?: boolean;
 }
 
+interface BannerSlide {
+  id: string;
+  title: string;
+  description: string;
+  imagePng: string;
+  imageWebpSrcSet: string;
+  alt: string;
+  whatsappMessage: string;
+}
+
+const BANNERS: BannerSlide[] = [
+  {
+    id: 'baked-pasta',
+    title: 'Baked Pasta - Hot • Cheesy • Loaded',
+    description: 'Small Rs 400 (+Tax) • Large Rs 700 (+Tax)',
+    imagePng: '/assets/baked-pasta-banner-hq.png',
+    imageWebpSrcSet:
+      '/assets/baked-pasta-banner-hq.webp 2560w, /assets/baked-pasta-banner-4k.webp 3840w',
+    alt: 'Chickado Baked Pasta - Hot, Cheesy, Loaded. Small Rs 400 +Tax, Large Rs 700 +Tax. Click to Order Now on WhatsApp.',
+    whatsappMessage:
+      'Hi Chickado! I would like to order the Baked Pasta (Hot • Cheesy • Loaded) - Small (Rs 400) / Large (Rs 700).',
+  },
+  {
+    id: 'crunch-box',
+    title: 'Crunch Box - Hot • Crispy • Delicious',
+    description: '1 Chicken Broast Pcs, 1 Crunch Burger, 1 Reg Drink - Rs 650 (+Tax)',
+    imagePng: '/assets/crunch-box-banner-hq.png',
+    imageWebpSrcSet:
+      '/assets/crunch-box-banner-hq.webp 2560w, /assets/crunch-box-banner-4k.webp 3840w',
+    alt: 'Chickado Crunch Box - Hot, Crispy, Delicious. 1 Chicken Broast Pcs, 1 Crunch Burger, 1 Reg Drink. RS 650 (+Tax). Click to Order Now on WhatsApp.',
+    whatsappMessage:
+      'Hi Chickado! I would like to order the Crunch Box Deal (1 Chicken Broast Pcs, 1 Crunch Burger, 1 Reg Drink) - Rs 650 (+Tax).',
+  },
+];
+
+const AUTO_SLIDE_INTERVAL = 5000;
+
 export default function PromoBanner({
-  voucherCode = 'CHICK100',
-  discountText = 'FLAT RS 100 OFF ON ORDERS OVER RS 1,000',
   className = '',
   fullWidth = true,
 }: PromoBannerProps) {
-  const [copied, setCopied] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const touchStartX = useRef<number | null>(null);
+  const touchEndX = useRef<number | null>(null);
 
-  const handleCopyCode = () => {
-    navigator.clipboard.writeText(voucherCode);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2500);
+  const goToNext = useCallback(() => {
+    setCurrentIndex((prev) => (prev + 1) % BANNERS.length);
+  }, []);
+
+  const goToPrev = useCallback(() => {
+    setCurrentIndex((prev) => (prev - 1 + BANNERS.length) % BANNERS.length);
+  }, []);
+
+  const goToSlide = (index: number) => {
+    setCurrentIndex(index);
+  };
+
+  // Auto-slide every 5 seconds unless paused by hover or touch
+  useEffect(() => {
+    if (isPaused) return;
+
+    const timer = setInterval(() => {
+      goToNext();
+    }, AUTO_SLIDE_INTERVAL);
+
+    return () => clearInterval(timer);
+  }, [isPaused, goToNext, currentIndex]);
+
+  // Touch handlers for mobile swipe
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    setIsPaused(true);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    if (touchStartX.current !== null && touchEndX.current !== null) {
+      const diffX = touchStartX.current - touchEndX.current;
+      const minSwipeDistance = 40;
+      if (diffX > minSwipeDistance) {
+        goToNext();
+      } else if (diffX < -minSwipeDistance) {
+        goToPrev();
+      }
+    }
+    touchStartX.current = null;
+    touchEndX.current = null;
+    setIsPaused(false);
   };
 
   return (
-    <div
-      className={`relative overflow-hidden bg-gradient-to-r from-red-700 via-red-600 to-amber-700 text-white shadow-xl ${
-        fullWidth
-          ? 'w-full border-y border-red-500/40'
-          : 'rounded-3xl border border-red-500/40 shadow-2xl'
-      } ${className}`}
+    <section
+      className={`relative w-full overflow-hidden bg-[#3A020F] text-white border-b border-red-950/40 shadow-sm group/slider ${className}`}
+      aria-label="Promotional Deals Billboard Carousel"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
     >
-      {/* Background Lighting Effects & Dynamic Fast-Food Patterns */}
-      <div className="absolute -top-32 -left-24 w-96 h-96 bg-amber-400/25 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-32 -right-24 w-96 h-96 bg-black/40 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.15),transparent_60%)] pointer-events-none" />
-
-      {/* Decorative Fast-Food Diagonal Stripes Overlay */}
+      {/* Sliding Billboard Track */}
       <div
-        className="absolute inset-0 opacity-[0.045] pointer-events-none"
-        style={{
-          backgroundImage:
-            'repeating-linear-gradient(45deg, #fff, #fff 14px, transparent 14px, transparent 28px)',
-        }}
-      />
-
-      <div
-        className={`relative z-10 ${
-          fullWidth
-            ? 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14'
-            : 'px-6 py-8 sm:px-10 sm:py-12 lg:px-12'
-        }`}
+        className="flex w-full transition-transform duration-700 ease-in-out will-change-transform"
+        style={{ transform: `translateX(-${currentIndex * 100}%)` }}
       >
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-          {/* Left Column: Headlines, Promo Code, CTAs */}
-          <div className="lg:col-span-7 space-y-5 text-center lg:text-left">
-            {/* Top Badge */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/15 backdrop-blur-md border border-white/20 text-white text-xs font-black uppercase tracking-wider shadow-sm">
-              <Flame className="w-4 h-4 fill-amber-300 text-amber-300 animate-pulse" />
-              <span>Limited Time Mega Deal</span>
-            </div>
+        {BANNERS.map((banner, index) => {
+          const whatsappUrl = `https://wa.me/${brandConfig.whatsappCleanNumber}?text=${encodeURIComponent(
+            banner.whatsappMessage
+          )}`;
 
-            {/* Main Headline */}
-            <div>
-              <h2 className="text-3xl sm:text-4xl xl:text-5xl font-black uppercase tracking-tight leading-tight drop-shadow-md">
-                CRUNCH TIME IS{' '}
-                <span className="text-amber-300 underline decoration-amber-400 decoration-wavy decoration-2">
-                  CHICKADO
-                </span>{' '}
-                TIME!
-              </h2>
-              <p className="text-sm sm:text-base text-red-100 mt-2.5 max-w-xl font-medium leading-relaxed">
-                Enjoy golden crispy fried chicken, hand-breaded daily with our secret 11-herb recipe. Piping hot, juicy inside, and guaranteed crunch in every bite.
-              </p>
-            </div>
-
-            {/* Voucher Coupon Pill */}
-            <div className="inline-flex flex-wrap items-center gap-3 bg-black/25 backdrop-blur-md border border-white/20 rounded-2xl p-2 sm:p-2.5 pr-4 shadow-inner">
-              <div className="flex items-center gap-2 px-3 py-1 bg-amber-400 text-neutral-950 font-black text-xs uppercase tracking-wider rounded-xl shadow-xs">
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>{discountText}</span>
-              </div>
-
-              <div className="flex items-center gap-2 pl-2">
-                <span className="text-xs text-white/80 font-bold uppercase">Code:</span>
-                <span className="font-mono font-black text-sm text-white tracking-widest">
-                  {voucherCode}
-                </span>
-                <button
-                  onClick={handleCopyCode}
-                  className="p-1.5 rounded-lg bg-white/20 hover:bg-white/30 text-white transition active:scale-90 cursor-pointer"
-                  title="Copy coupon code"
-                  aria-label="Copy code"
-                >
-                  {copied ? (
-                    <Check className="w-3.5 h-3.5 text-emerald-400 stroke-[3]" />
-                  ) : (
-                    <Copy className="w-3.5 h-3.5" />
-                  )}
-                </button>
-              </div>
-            </div>
-
-            {/* CTAs */}
-            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3.5 pt-1">
-              <Link
-                href="/menu?category=deals-combos"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl bg-white text-red-600 hover:bg-amber-300 hover:text-neutral-950 font-black text-xs uppercase tracking-wider transition-all duration-200 shadow-xl active:scale-95 cursor-pointer"
-              >
-                <span>View Feast Combos</span>
-                <ArrowRight className="w-4 h-4 stroke-[2.5]" />
-              </Link>
-
+          return (
+            <div
+              key={banner.id}
+              className="min-w-full w-full flex-shrink-0 relative aspect-[1024/340] min-h-[140px] sm:min-h-0 bg-[#3A020F] overflow-hidden"
+            >
               <a
-                href={`https://wa.me/${brandConfig.whatsappCleanNumber}?text=${encodeURIComponent(
-                  `Hi Chickado! I want to claim the ${voucherCode} promo deal.`
-                )}`}
+                href={whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs uppercase tracking-wider transition-all duration-200 shadow-lg active:scale-95 cursor-pointer"
+                className="group block relative w-full h-full cursor-pointer select-none"
+                title={`Click to Order ${banner.title} on WhatsApp`}
+                tabIndex={currentIndex === index ? 0 : -1}
+                aria-label={`Order ${banner.title}`}
               >
-                <WhatsAppIcon className="w-4 h-4" />
-                <span>Order on WhatsApp</span>
+                {/* Responsive Ultra-HD 4K/2.5K Picture Elements for Razor-Sharp Full-Width Display */}
+                <picture className="block w-full h-full">
+                  <source
+                    type="image/webp"
+                    srcSet={banner.imageWebpSrcSet}
+                    sizes="100vw"
+                  />
+                  <img
+                    src={banner.imagePng}
+                    alt={banner.alt}
+                    className="w-full h-full object-cover transform group-hover:scale-[1.008] transition-transform duration-500 ease-out"
+                    loading="eager"
+                    fetchPriority={index === 0 ? 'high' : 'auto'}
+                  />
+                </picture>
+
+                {/* Interactive Hover Sheen Overlay */}
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none bg-gradient-to-tr from-white/0 via-white/5 to-white/0" />
               </a>
             </div>
-          </div>
-
-          {/* Right Column: High-Res Appetizing Feast Visual */}
-          <div className="lg:col-span-5 relative">
-            <div className="relative w-full aspect-[4/3] max-w-md mx-auto rounded-2xl overflow-hidden shadow-2xl border-2 border-white/30 group">
-              <Image
-                src="/assets/chickado-feast-bucket.jpg"
-                alt="Chickado Crispy Feast Bucket"
-                fill
-                unoptimized
-                sizes="(max-width: 1024px) 100vw, 440px"
-                className="object-cover group-hover:scale-105 transition-transform duration-700"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/10" />
-
-              {/* Floating Review Badge */}
-              <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-md text-neutral-900 rounded-xl px-3 py-1.5 shadow-lg flex items-center gap-1.5 border border-white">
-                <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
-                <span className="text-xs font-black">4.9 / 5</span>
-                <span className="text-[10px] text-neutral-500 font-semibold">(10k+ Bites)</span>
-              </div>
-
-              {/* Floating Quality Tag */}
-              <div className="absolute bottom-3 right-3 bg-red-600/95 backdrop-blur-md text-white rounded-xl px-3.5 py-1.5 shadow-lg text-xs font-black uppercase tracking-wider border border-white/30 flex items-center gap-1.5">
-                <Flame className="w-3.5 h-3.5 fill-white" />
-                <span>100% Halal Fresh</span>
-              </div>
-            </div>
-          </div>
-        </div>
+          );
+        })}
       </div>
-    </div>
+
+      {/* Slide Indicators / Pill Dots */}
+      <div className="absolute bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/50 backdrop-blur-md border border-white/15 shadow-xl">
+        {BANNERS.map((banner, index) => {
+          const isActive = currentIndex === index;
+          return (
+            <button
+              key={banner.id}
+              onClick={() => goToSlide(index)}
+              aria-label={`Go to slide ${index + 1}: ${banner.title}`}
+              className={`h-2 rounded-full transition-all duration-500 cursor-pointer ${
+                isActive
+                  ? 'w-7 bg-gradient-to-r from-red-500 via-amber-400 to-amber-300 shadow-[0_0_10px_rgba(245,158,11,0.6)]'
+                  : 'w-2 bg-white/40 hover:bg-white/80'
+              }`}
+            />
+          );
+        })}
+      </div>
+    </section>
   );
 }

@@ -305,6 +305,358 @@ h1, h2, h3, h4, h5, h6, .font-heading {
   will-change: opacity, transform;
 }
 
+/* =========================================================
+   REALISTIC 3D PHYSICAL BOOK & PAGE FLIP ENGINE
+   ========================================================= */
+
+.perspective-book {
+  perspective: 2500px;
+  -webkit-perspective: 2500px;
+}
+
+.preserve-3d {
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Natural Book Spine Binding Crease & Ambient Shadow */
+.book-spine-crease {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2.5rem;
+  pointer-events: none;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.book-spine-shadow-ambient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(0, 0, 0, 0.08) 20%,
+    rgba(0, 0, 0, 0.32) 50%,
+    rgba(0, 0, 0, 0.08) 80%,
+    transparent 100%
+  );
+}
+
+.book-spine-seam-line {
+  width: 1.5px;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.55);
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.7);
+}
+
+.book-spine-highlight-line {
+  width: 1px;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Page Curvature Shading - Soft realistic paper curve near the central spine only */
+.page-shadow-left {
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    transparent 78%,
+    rgba(0, 0, 0, 0.04) 86%,
+    rgba(0, 0, 0, 0.16) 94%,
+    rgba(0, 0, 0, 0.38) 100%
+  );
+}
+
+.page-shadow-right {
+  background: linear-gradient(
+    to left,
+    transparent 0%,
+    transparent 78%,
+    rgba(0, 0, 0, 0.04) 86%,
+    rgba(0, 0, 0, 0.16) 94%,
+    rgba(0, 0, 0, 0.38) 100%
+  );
+}
+
+/* Realistic Luxury Restaurant Hardcover Book Casing (No clunky white strips, no fake borders) */
+.real-book-casing {
+  background: #120403;
+  border-radius: 0.65rem;
+  box-shadow:
+    0 35px 85px -15px rgba(0, 0, 0, 0.92),
+    0 15px 35px -8px rgba(0, 0, 0, 0.75),
+    0 0 50px -10px rgba(0, 0, 0, 0.6);
+  padding: 4px;
+}
+
+/* Closed Book Realistic Spine & Page Block */
+.closed-book-casing {
+  background: #140403;
+  border-radius: 0.375rem 0.65rem 0.65rem 0.375rem;
+  box-shadow:
+    -18px 25px 65px -10px rgba(0, 0, 0, 0.88),
+    -6px 12px 28px -5px rgba(0, 0, 0, 0.65);
+}
+
+/* Dynamic Page Turning Leaf */
+.page-leaf {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.page-leaf-right {
+  right: 0;
+  transform-origin: left center;
+}
+
+.page-leaf-left {
+  left: 0;
+  transform-origin: right center;
+}
+
+/* ==========================================================================
+   EXTREME-LEVEL SMOOTH 3D PHYSICAL BOOK ANIMATIONS
+   ========================================================================== */
+
+/* Authentic Hardcover 3D Swing Open with Inertia & Micro-Settle */
+@keyframes realisticCoverSwing {
+  0% {
+    transform: rotateY(0deg) translateZ(0px) rotateZ(0deg);
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.95);
+  }
+  25% {
+    transform: rotateY(-38deg) translateZ(18px) rotateZ(-0.8deg);
+    box-shadow: -15px 28px 65px rgba(0, 0, 0, 0.75);
+  }
+  50% {
+    transform: rotateY(-90deg) translateZ(30px) rotateZ(0deg);
+    box-shadow: -35px 25px 60px rgba(0, 0, 0, 0.55);
+  }
+  75% {
+    transform: rotateY(-148deg) translateZ(16px) rotateZ(0.6deg);
+    box-shadow: -45px 16px 45px rgba(0, 0, 0, 0.42);
+  }
+  92% {
+    /* Soft physical cushion settle */
+    transform: rotateY(-181.2deg) translateZ(2px) rotateZ(-0.1deg);
+    box-shadow: -8px 12px 30px rgba(0, 0, 0, 0.38);
+  }
+  100% {
+    transform: rotateY(-180deg) translateZ(0px) rotateZ(0deg);
+    box-shadow: -5px 10px 25px rgba(0, 0, 0, 0.35);
+  }
+}
+
+.animate-realistic-cover-open {
+  animation: realisticCoverSwing 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  transform-origin: left center;
+  transform-style: preserve-3d;
+  will-change: transform, box-shadow;
+}
+
+/* Corner Dog-Ear Curl on Hover */
+.page-corner-curl-right {
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.page-corner-curl-right:hover {
+  transform: translate(-10px, -10px) rotate(-8deg);
+  box-shadow: -10px 10px 25px rgba(0, 0, 0, 0.5);
+}
+
+.page-corner-curl-left {
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.page-corner-curl-left:hover {
+  transform: translate(10px, -10px) rotate(8deg);
+  box-shadow: 10px 10px 25px rgba(0, 0, 0, 0.5);
+}
+
+/* Real Physical Paper Turn Forward: Hardware-accelerated GPU 60fps smooth arc */
+@keyframes pageFlipForward {
+  0% {
+    transform: rotateY(0deg) translateZ(0.1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  20% {
+    transform: rotateY(-32deg) translateZ(26px) rotateZ(-0.9deg);
+    box-shadow: -10px 16px 30px rgba(0, 0, 0, 0.28);
+  }
+  50% {
+    transform: rotateY(-90deg) translateZ(44px) rotateZ(0deg);
+    box-shadow: -22px 22px 45px rgba(0, 0, 0, 0.38);
+  }
+  80% {
+    transform: rotateY(-148deg) translateZ(24px) rotateZ(0.9deg);
+    box-shadow: -10px 16px 30px rgba(0, 0, 0, 0.28);
+  }
+  94% {
+    transform: rotateY(-180.8deg) translateZ(1.5px);
+    box-shadow: -2px 6px 12px rgba(0, 0, 0, 0.20);
+  }
+  100% {
+    transform: rotateY(-180deg) translateZ(0.1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+}
+
+/* Real Physical Paper Turn Backward: Hardware-accelerated GPU 60fps smooth arc */
+@keyframes pageFlipBackward {
+  0% {
+    transform: rotateY(-180deg) translateZ(0.1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  20% {
+    transform: rotateY(-148deg) translateZ(26px) rotateZ(0.9deg);
+    box-shadow: -10px 16px 30px rgba(0, 0, 0, 0.28);
+  }
+  50% {
+    transform: rotateY(-90deg) translateZ(44px) rotateZ(0deg);
+    box-shadow: -22px 22px 45px rgba(0, 0, 0, 0.38);
+  }
+  80% {
+    transform: rotateY(-32deg) translateZ(24px) rotateZ(-0.9deg);
+    box-shadow: -10px 16px 30px rgba(0, 0, 0, 0.28);
+  }
+  94% {
+    transform: rotateY(0.8deg) translateZ(1.5px);
+    box-shadow: 2px 6px 12px rgba(0, 0, 0, 0.20);
+  }
+  100% {
+    transform: rotateY(0deg) translateZ(0.1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+}
+
+/* Specular Light Sheen Sweeping Across Paper During Flip */
+@keyframes pageSheenForward {
+  0% {
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.25;
+    background: linear-gradient(
+      to right,
+      rgba(0, 0, 0, 0.18) 0%,
+      rgba(255, 255, 255, 0.24) 40%,
+      transparent 80%
+    );
+  }
+  50% {
+    opacity: 0.45;
+    background: linear-gradient(
+      to right,
+      rgba(0, 0, 0, 0.25) 0%,
+      rgba(255, 255, 255, 0.35) 45%,
+      rgba(0, 0, 0, 0.18) 100%
+    );
+  }
+  80% {
+    opacity: 0.25;
+    background: linear-gradient(
+      to left,
+      rgba(0, 0, 0, 0.18) 0%,
+      rgba(255, 255, 255, 0.24) 40%,
+      transparent 80%
+    );
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes pageSheenBackward {
+  0% {
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.25;
+    background: linear-gradient(
+      to left,
+      rgba(0, 0, 0, 0.18) 0%,
+      rgba(255, 255, 255, 0.24) 40%,
+      transparent 80%
+    );
+  }
+  50% {
+    opacity: 0.45;
+    background: linear-gradient(
+      to left,
+      rgba(0, 0, 0, 0.25) 0%,
+      rgba(255, 255, 255, 0.35) 45%,
+      rgba(0, 0, 0, 0.18) 100%
+    );
+  }
+  80% {
+    opacity: 0.25;
+    background: linear-gradient(
+      to right,
+      rgba(0, 0, 0, 0.18) 0%,
+      rgba(255, 255, 255, 0.24) 40%,
+      transparent 80%
+    );
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Dynamic Ambient Shadows Under Turning Pages */
+@keyframes pageUnderneathLift {
+  0% {
+    opacity: 0.42;
+  }
+  45% {
+    opacity: 0.16;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes pageUnderneathLand {
+  0% {
+    opacity: 0;
+  }
+  55% {
+    opacity: 0.12;
+  }
+  88% {
+    opacity: 0.36;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes fadeInModal {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeInModal 0.3s ease-out forwards;
+}
+
 /* Accessibility: Respect Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
   *, ::before, ::after {

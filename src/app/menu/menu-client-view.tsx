@@ -3,10 +3,18 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
-import { Search, Flame, Filter, X } from 'lucide-react';
+import {
+  Search,
+  Flame,
+  Filter,
+  X,
+  ChevronLeft,
+  ChevronRight,
+  ChevronDown,
+  ArrowUpDown,
+} from 'lucide-react';
 import ItemModal from '@/components/item-modal';
 import MenuItemCard, { ItemType } from '@/components/menu-item-card';
-import PromoBanner from '@/components/promo-banner';
 import { useCartStore } from '@/lib/cart-store';
 
 interface CategoryType {
@@ -15,29 +23,109 @@ interface CategoryType {
   slug: string;
   description?: string | null;
   image?: string | null;
+  isComingSoon?: boolean;
   items: ItemType[];
 }
 
-function getCategoryIcon(slug: string) {
-  switch (slug) {
-    case 'burgers':
-      return '🍔';
-    case 'fried-chicken':
-      return '🍗';
-    case 'wings':
-      return '🌶️';
+interface CategoryBannerMeta {
+  line1: string;
+  line2: string;
+  subYellow: string;
+  badgeTop: string;
+  badgeBottom: string;
+}
+
+function getCategoryBannerContent(category: CategoryType): CategoryBannerMeta {
+  if (category.isComingSoon) {
+    return {
+      line1: 'EXCLUSIVE PREVIEW • COMING SOON',
+      line2: category.name.toUpperCase(),
+      subYellow: (category.description || 'LAUNCHING SOON AT CHICKADO PESHAWAR SADDAR').toUpperCase(),
+      badgeTop: 'COMING',
+      badgeBottom: 'SOON',
+    };
+  }
+
+  switch (category.slug) {
     case 'deals-combos':
-      return '🔥';
+      return {
+        line1: 'NEVER SETTLE FOR',
+        line2: '1 – GET ALL 4 IN ONE',
+        subYellow: '21 INCH CITY SQUARE PIZZA & CRISPY BOX',
+        badgeTop: 'CHICKADO',
+        badgeBottom: 'SPECIAL',
+      };
+    case 'pizzas':
+      return {
+        line1: 'FRESH DOUGH • MELTY CHEESE',
+        line2: 'GOURMET CRUST PIZZAS',
+        subYellow: 'HAND-CRAFTED ARTISAN CRUSTS & PREMIUM MOZZARELLA',
+        badgeTop: 'CHICKADO',
+        badgeBottom: 'SPECIAL',
+      };
+    case 'burgers':
+      return {
+        line1: 'SUPREME CRUNCH IN EVERY BITE',
+        line2: 'SIGNATURE ZINGERS & BURGERS',
+        subYellow: 'JUICY CRISPY CHICKEN FILLETS & SECRET SAUCE',
+        badgeTop: 'CHICKADO',
+        badgeBottom: 'SPECIAL',
+      };
+    case 'fried-chicken':
+      return {
+        line1: '11 SECRET HERBS & SPICES',
+        line2: 'GOLDEN CRISPY BROAST',
+        subYellow: 'PRESSURE-FRIED TO JUICY, SIZZLING PERFECTION',
+        badgeTop: 'CHICKADO',
+        badgeBottom: 'SPECIAL',
+      };
+    case 'pastas-starters':
+      return {
+        line1: 'HOT • CHEESY • LOADED',
+        line2: 'OVEN-BAKED PASTAS & WINGS',
+        subYellow: 'MOLTEN MOZZARELLA, CALZONE & CRISPY SIZZLERS',
+        badgeTop: 'CHICKADO',
+        badgeBottom: 'SPECIAL',
+      };
+    case 'sides':
     case 'sides-dips':
-      return '🍟';
+    case 'sides-extras':
+      return {
+        line1: 'PERFECT CRUNCH COMPANIONS',
+        line2: 'CRISPY FRIES & SIDES',
+        subYellow: 'SEASONED CRINKLE FRIES, DIPS & GARLIC MAYO',
+        badgeTop: 'CHICKADO',
+        badgeBottom: 'SPECIAL',
+      };
+    case 'bar-drinks':
     case 'drinks':
-      return '🥤';
+    case 'beverages':
+      return {
+        line1: 'ICE COLD & REFRESHING',
+        line2: 'CHILLED BEVERAGES',
+        subYellow: 'BEST PAIRED WITH YOUR FAVORITE CRUNCH MEAL',
+        badgeTop: 'CHICKADO',
+        badgeBottom: 'SPECIAL',
+      };
     case 'desserts':
-      return '🍰';
+      return {
+        line1: 'SWEET INDULGENCE',
+        line2: 'SIGNATURE DESSERTS',
+        subYellow: 'WARM CHOCOLATE LAVA CAKES & SWEET BITES',
+        badgeTop: 'CHICKADO',
+        badgeBottom: 'SPECIAL',
+      };
     default:
-      return '🍗';
+      return {
+        line1: 'CHICKADO AUTHENTIC TASTE',
+        line2: category.name.toUpperCase(),
+        subYellow: (category.description || 'FRESHLY PREPARED WITH PREMIUM INGREDIENTS').toUpperCase(),
+        badgeTop: 'CHICKADO',
+        badgeBottom: 'SPECIAL',
+      };
   }
 }
+
 
 export default function MenuClientView({ categories }: { categories: CategoryType[] }) {
   const searchParams = useSearchParams();
@@ -53,10 +141,25 @@ export default function MenuClientView({ categories }: { categories: CategoryTyp
   const isManualScrolling = useRef(false);
   const manualScrollTimeout = useRef<NodeJS.Timeout | null>(null);
   const tabButtonRefs = useRef<{ [key: string]: HTMLButtonElement | null }>({});
+  const scrollRailRef = useRef<HTMLDivElement>(null);
+
+  const scrollTabsLeft = () => {
+    if (scrollRailRef.current) {
+      scrollRailRef.current.scrollBy({ left: -260, behavior: 'smooth' });
+    }
+  };
+
+  const scrollTabsRight = () => {
+    if (scrollRailRef.current) {
+      scrollRailRef.current.scrollBy({ left: 260, behavior: 'smooth' });
+    }
+  };
 
   // Flatten all items
   const allItems = useMemo(() => {
-    return categories.flatMap((c) => c.items);
+    return categories
+      .filter((c) => !c.isComingSoon && c.items.length > 0)
+      .flatMap((c) => c.items);
   }, [categories]);
 
   // Group, filter & sort items by category
@@ -87,7 +190,7 @@ export default function MenuClientView({ categories }: { categories: CategoryTyp
           items,
         };
       })
-      .filter((cat) => cat.items.length > 0);
+      .filter((cat) => !cat.isComingSoon && cat.items.length > 0);
   }, [categories, searchQuery, sortBy]);
 
   const totalVisibleItems = useMemo(() => {
@@ -123,8 +226,8 @@ export default function MenuClientView({ categories }: { categories: CategoryTyp
         return;
       }
 
-      // Target threshold line just below the sticky header (~160px from viewport top)
-      const targetOffset = 180;
+      // Target threshold line just below the sticky header (~180px from viewport top)
+      const targetOffset = 185;
       let matchedSlug = '';
 
       for (let i = 0; i < sections.length; i++) {
@@ -181,10 +284,12 @@ export default function MenuClientView({ categories }: { categories: CategoryTyp
       isManualScrolling.current = false;
     }, 850);
 
+    const scrollBuffer = 175;
+
     if (slug === 'all') {
       const container = document.getElementById('menu-items-container');
       if (container) {
-        const y = container.getBoundingClientRect().top + window.scrollY - 150;
+        const y = container.getBoundingClientRect().top + window.scrollY - scrollBuffer;
         window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
       } else {
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -192,7 +297,7 @@ export default function MenuClientView({ categories }: { categories: CategoryTyp
     } else {
       const el = document.getElementById(`category-${slug}`);
       if (el) {
-        const y = el.getBoundingClientRect().top + window.scrollY - 150;
+        const y = el.getBoundingClientRect().top + window.scrollY - scrollBuffer;
         window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
       }
     }
@@ -248,11 +353,11 @@ export default function MenuClientView({ categories }: { categories: CategoryTyp
           </div>
 
           {/* Search Box */}
-          <div className="w-full md:w-88 relative">
+          <div className="w-full sm:w-72 md:w-80 relative">
             <Search className="w-4 h-4 absolute left-3.5 top-3.5 text-neutral-400" />
             <input
               type="text"
-              placeholder="Search burgers, wings, buckets..."
+              placeholder="Search burgers, wings, pizzas..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-9 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-red-600 focus:bg-white transition"
@@ -270,63 +375,137 @@ export default function MenuClientView({ categories }: { categories: CategoryTyp
         </div>
       </div>
 
-      {/* Promotional Fast-Food Banner Section (Complete Page Width) */}
-      <PromoBanner fullWidth />
-
       {/* Main Content Area */}
-      <div className="max-w-7xl 2xl:max-w-[1480px] mx-auto px-3 sm:px-6 lg:px-8 pt-6 sm:pt-8">
-        {/* Sticky Category Tabs Bar with Auto-Scrollspy */}
-        <div className="sticky top-20 z-30 bg-white border border-neutral-200/80 rounded-2xl shadow-sm p-2.5 sm:p-3 mb-8 backdrop-blur-md bg-white/95">
-          <div className="flex items-center justify-between gap-4 overflow-x-auto scrollbar-none py-0.5">
-            {/* Category Pills */}
-            <div className="flex items-center gap-2 shrink-0">
+      <div className="max-w-7xl 2xl:max-w-[1480px] mx-auto px-3 sm:px-6 lg:px-8 pt-4 sm:pt-6">
+        {/* Seamless Sticky Category Navigation Dock */}
+        <div className="sticky top-16 z-30 bg-[#F4F6F8]/85 backdrop-blur-xl pt-2 sm:pt-3 pb-3 -mx-3 sm:-mx-6 lg:-mx-8 px-3 sm:px-6 lg:px-8 border-b border-neutral-200/80 shadow-[0_10px_25px_-5px_rgba(0,0,0,0.05)] mb-7 sm:mb-9 transition-all">
+          <div className="max-w-7xl 2xl:max-w-[1480px] mx-auto">
+            <div className="relative bg-white/95 backdrop-blur-md border border-neutral-200/90 rounded-2xl shadow-sm hover:shadow-md transition-shadow p-1.5 sm:p-2 flex items-center justify-between gap-2 sm:gap-3">
+              {/* Left Arrow Button for Desktop Rail */}
               <button
-                ref={(el) => {
-                  tabButtonRefs.current['all'] = el;
-                }}
-                onClick={() => handleCategoryClick('all')}
-                className={`px-3.5 sm:px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
-                  activeCategory === 'all'
-                    ? 'bg-red-600 text-white shadow-md shadow-red-600/20 scale-[1.02]'
-                    : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
-                }`}
+                type="button"
+                onClick={scrollTabsLeft}
+                className="hidden md:flex shrink-0 w-8 h-8 rounded-xl bg-neutral-100 hover:bg-neutral-200/90 text-neutral-600 hover:text-neutral-900 items-center justify-center transition active:scale-90 cursor-pointer"
+                aria-label="Scroll categories left"
+                title="Scroll categories left"
               >
-                🔥 All Items ({allItems.length})
+                <ChevronLeft className="w-4 h-4 stroke-[2.5]" />
               </button>
 
-              {categories.map((c) => {
-                const active = activeCategory === c.slug;
-                return (
-                  <button
-                    key={c.id}
-                    ref={(el) => {
-                      tabButtonRefs.current[c.slug] = el;
-                    }}
-                    onClick={() => handleCategoryClick(c.slug)}
-                    className={`px-3.5 sm:px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
-                      active
-                        ? 'bg-red-600 text-white shadow-md shadow-red-600/20 scale-[1.02]'
-                        : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
+              {/* Category Pills Rail with min-w-0 for mobile flex shrinking */}
+              <div
+                ref={scrollRailRef}
+                className="flex items-center gap-1 sm:gap-2 overflow-x-auto scrollbar-none py-0.5 px-0.5 flex-1 min-w-0 scroll-smooth"
+              >
+                <button
+                  ref={(el) => {
+                    tabButtonRefs.current['all'] = el;
+                  }}
+                  onClick={() => handleCategoryClick('all')}
+                  className={`group relative flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2.5 rounded-xl text-[11px] sm:text-xs font-black uppercase tracking-wider transition-all duration-200 cursor-pointer whitespace-nowrap select-none active:scale-95 shrink-0 ${
+                    activeCategory === 'all'
+                      ? 'bg-gradient-to-r from-red-600 via-red-600 to-amber-600 text-white shadow-md shadow-red-600/30 scale-[1.02]'
+                      : 'bg-neutral-100/80 hover:bg-neutral-200/90 text-neutral-700 hover:text-neutral-950 border border-neutral-200/40'
+                  }`}
+                >
+                  <span>All Items</span>
+                  <span
+                    className={`text-[9px] sm:text-[10px] font-black px-1.5 py-0.5 rounded-md transition-colors ${
+                      activeCategory === 'all'
+                        ? 'bg-white/25 text-white backdrop-blur-xs'
+                        : 'bg-neutral-200/80 text-neutral-500 group-hover:bg-neutral-300/80 group-hover:text-neutral-800'
                     }`}
                   >
-                    {c.name} ({c.items.length})
-                  </button>
-                );
-              })}
-            </div>
+                    {allItems.length}
+                  </span>
+                </button>
 
-            {/* Sort Selector */}
-            <div className="hidden sm:flex items-center gap-2 shrink-0 pl-2 border-l border-neutral-200">
-              <Filter className="w-3.5 h-3.5 text-neutral-400" />
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as any)}
-                className="text-xs font-bold bg-neutral-50 border border-neutral-200 rounded-xl px-3 py-2 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-red-600 cursor-pointer"
+                {categories
+                  .filter((c) => !c.isComingSoon && c.items.length > 0)
+                  .map((c) => {
+                  const active = activeCategory === c.slug;
+                  return (
+                    <button
+                      key={c.id}
+                      ref={(el) => {
+                        tabButtonRefs.current[c.slug] = el;
+                      }}
+                      onClick={() => handleCategoryClick(c.slug)}
+                      className={`group relative flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2.5 rounded-xl text-[11px] sm:text-xs font-black uppercase tracking-wider transition-all duration-200 cursor-pointer whitespace-nowrap select-none active:scale-95 shrink-0 ${
+                        active
+                          ? 'bg-gradient-to-r from-red-600 via-red-600 to-amber-600 text-white shadow-md shadow-red-600/30 scale-[1.02]'
+                          : 'bg-neutral-100/80 hover:bg-neutral-200/90 text-neutral-700 hover:text-neutral-950 border border-neutral-200/40'
+                      }`}
+                    >
+                      <span>{c.name}</span>
+                      <span
+                        className={`text-[9px] sm:text-[10px] font-black px-1.5 py-0.5 rounded-md transition-colors ${
+                          c.isComingSoon
+                            ? 'bg-amber-400 text-neutral-950 font-black'
+                            : active
+                            ? 'bg-white/25 text-white backdrop-blur-xs'
+                            : 'bg-neutral-200/80 text-neutral-500 group-hover:bg-neutral-300/80 group-hover:text-neutral-800'
+                        }`}
+                      >
+                        {c.isComingSoon ? 'SOON' : c.items.length}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Right Arrow Button for Desktop Rail */}
+              <button
+                type="button"
+                onClick={scrollTabsRight}
+                className="hidden md:flex shrink-0 w-8 h-8 rounded-xl bg-neutral-100 hover:bg-neutral-200/90 text-neutral-600 hover:text-neutral-900 items-center justify-center transition active:scale-90 cursor-pointer"
+                aria-label="Scroll categories right"
+                title="Scroll categories right"
               >
-                <option value="default">Default Sort</option>
-                <option value="price-asc">Price: Low to High</option>
-                <option value="price-desc">Price: High to Low</option>
-              </select>
+                <ChevronRight className="w-4 h-4 stroke-[2.5]" />
+              </button>
+
+              {/* Responsive Sort Selector: Ultra-compact on mobile, expanded on sm+ */}
+              <div className="flex items-center shrink-0 pl-1.5 sm:pl-3 border-l border-neutral-200/80">
+                <div className="relative flex items-center">
+                  {/* Mobile Compact Icon Button Trigger (< sm) */}
+                  <div className="flex sm:hidden w-8 h-8 rounded-xl bg-neutral-100 border border-neutral-200/80 items-center justify-center text-red-600 shadow-2xs">
+                    <ArrowUpDown className="w-3.5 h-3.5 stroke-[2.5]" />
+                    {sortBy !== 'default' && (
+                      <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-red-600 rounded-full border border-white" />
+                    )}
+                  </div>
+
+                  {/* Tablet & Desktop Expanded Button Trigger (>= sm) */}
+                  <div className="hidden sm:flex items-center bg-neutral-100/90 hover:bg-neutral-200/80 text-neutral-800 border border-neutral-200/80 rounded-xl pl-8 pr-7 py-2 sm:py-2.5 transition-all shadow-2xs">
+                    <div className="pointer-events-none absolute left-2.5 sm:left-3 flex items-center text-red-600">
+                      <ArrowUpDown className="w-3.5 h-3.5 stroke-[2.5]" />
+                    </div>
+                    <span className="text-xs font-black uppercase tracking-wider select-none">
+                      {sortBy === 'default'
+                        ? 'Default Sort'
+                        : sortBy === 'price-asc'
+                        ? 'Price: Low'
+                        : 'Price: High'}
+                    </span>
+                    <div className="pointer-events-none absolute right-2 sm:right-2.5 flex items-center text-neutral-400">
+                      <ChevronDown className="w-3.5 h-3.5" />
+                    </div>
+                  </div>
+
+                  {/* Accessible Native Select Overlay Covering Entire Trigger Area */}
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value as any)}
+                    aria-label="Sort menu items"
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer text-base"
+                  >
+                    <option value="default">Default Sort</option>
+                    <option value="price-asc">Price: Low to High</option>
+                    <option value="price-desc">Price: High to Low</option>
+                  </select>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -358,46 +537,119 @@ export default function MenuClientView({ categories }: { categories: CategoryTyp
                 key={category.id}
                 id={`category-${category.slug}`}
                 data-category-slug={category.slug}
-                className="category-section scroll-mt-36"
+                className="category-section scroll-mt-48 sm:scroll-mt-52"
               >
-                {/* Professional Category Banner Header */}
-                <div className="relative overflow-hidden bg-gradient-to-r from-white via-white to-red-50/30 rounded-2xl sm:rounded-3xl border border-neutral-200/80 shadow-[0_2px_14px_rgba(0,0,0,0.03)] p-3.5 sm:p-5 mb-5 sm:mb-7 group transition-all duration-300">
-                  {/* Left Brand Gradient Border */}
-                  <div className="absolute left-0 top-0 bottom-0 w-1.5 sm:w-2 bg-gradient-to-b from-red-600 via-red-500 to-amber-500 rounded-l-2xl sm:rounded-l-3xl" />
+                {/* Redesigned Category Billboard Banner (Matching Reference Image) */}
+                {(() => {
+                  const bannerMeta = getCategoryBannerContent(category);
+                  const patternId = `plus-pat-${category.slug}`;
+                  const maskLeftId = `mask-l-${category.slug}`;
+                  const maskRightId = `mask-r-${category.slug}`;
 
-                  {/* Iconic Chickado 3 Red Stripes (Top Right) */}
-                  <div className="absolute top-0 right-4 sm:right-6 flex items-center gap-1 opacity-75 pointer-events-none">
-                    <div className="w-1.5 h-3 bg-red-600 rounded-b-xs" />
-                    <div className="w-1.5 h-3 bg-red-600 rounded-b-xs" />
-                    <div className="w-1.5 h-3 bg-red-600 rounded-b-xs" />
-                  </div>
+                  return (
+                    <div className="relative overflow-hidden bg-gradient-to-r from-[#D60511] via-[#E30613] to-[#B8000C] rounded-2xl sm:rounded-2.5xl border border-white/20 shadow-[0_4px_20px_rgba(227,6,19,0.18)] py-3 px-4 sm:py-3.5 sm:px-6 md:py-4 md:px-7 mb-4 sm:mb-5 text-white select-none group transition-all duration-300">
+                      {/* Left Subtle White Plus Pattern Grid */}
+                      <svg
+                        className="absolute left-0 top-0 bottom-0 w-36 sm:w-56 pointer-events-none opacity-20"
+                        width="100%"
+                        height="100%"
+                        xmlns="http://www.w3.org/2000/svg"
+                        aria-hidden="true"
+                      >
+                        <defs>
+                          <pattern
+                            id={patternId}
+                            width="14"
+                            height="14"
+                            patternUnits="userSpaceOnUse"
+                          >
+                            <path
+                              d="M 7,3.5 L 7,10.5 M 3.5,7 L 10.5,7"
+                              stroke="#FFFFFF"
+                              strokeWidth="2"
+                              strokeLinecap="square"
+                            />
+                          </pattern>
+                          <linearGradient id={maskLeftId} x1="0" y1="0" x2="1" y2="0">
+                            <stop offset="30%" stopColor="#FFFFFF" stopOpacity="1" />
+                            <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0" />
+                          </linearGradient>
+                          <mask id={`mask-def-l-${category.slug}`}>
+                            <rect width="100%" height="100%" fill={`url(#${maskLeftId})`} />
+                          </mask>
+                        </defs>
+                        <rect
+                          width="100%"
+                          height="100%"
+                          fill={`url(#${patternId})`}
+                          mask={`url(#mask-def-l-${category.slug})`}
+                        />
+                      </svg>
 
-                  <div className="flex items-center justify-between gap-3 sm:gap-4 pl-2 sm:pl-3">
-                    {/* Left: Category Icon + Title + Description */}
-                    <div className="flex items-start sm:items-center gap-3 sm:gap-4 min-w-0">
-                      <div className="w-10 h-10 sm:w-13 sm:h-13 rounded-xl sm:rounded-2xl bg-gradient-to-br from-red-50 to-amber-50 border border-red-100 flex items-center justify-center shrink-0 shadow-xs text-xl sm:text-2xl group-hover:scale-105 transition-transform duration-300">
-                        {getCategoryIcon(category.slug)}
-                      </div>
+                      {/* Right Subtle White Plus Pattern Grid */}
+                      <svg
+                        className="absolute right-0 top-0 bottom-0 w-36 sm:w-56 pointer-events-none opacity-20"
+                        width="100%"
+                        height="100%"
+                        xmlns="http://www.w3.org/2000/svg"
+                        aria-hidden="true"
+                      >
+                        <defs>
+                          <linearGradient id={maskRightId} x1="1" y1="0" x2="0" y2="0">
+                            <stop offset="30%" stopColor="#FFFFFF" stopOpacity="1" />
+                            <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0" />
+                          </linearGradient>
+                          <mask id={`mask-def-r-${category.slug}`}>
+                            <rect width="100%" height="100%" fill={`url(#${maskRightId})`} />
+                          </mask>
+                        </defs>
+                        <rect
+                          width="100%"
+                          height="100%"
+                          fill={`url(#${patternId})`}
+                          mask={`url(#mask-def-r-${category.slug})`}
+                        />
+                      </svg>
 
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-                          <h2 className="text-lg sm:text-2xl font-black text-neutral-900 uppercase font-heading tracking-tight">
-                            {category.name}
+                      {/* Main Banner Content */}
+                      <div className="relative z-10 flex items-center justify-between gap-3 sm:gap-4">
+                        {/* Left: Punchy White Headline & Yellow Subtitle */}
+                        <div className="min-w-0 pr-1 sm:pr-2">
+                          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-black/25 backdrop-blur-xs text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-white/95 mb-1 sm:mb-1.5 border border-white/15">
+                            <Flame className="w-3 h-3 text-[#FFE600] fill-[#FFE600]" />
+                            <span>{category.name}</span>
+                            <span className="text-white/60">•</span>
+                            <span className="text-[#FFE600] font-black">
+                              {category.items.length} {category.items.length === 1 ? 'ITEM' : 'ITEMS'}
+                            </span>
+                          </div>
+
+                          <h2 className="text-base sm:text-lg md:text-xl lg:text-2xl font-black uppercase text-white tracking-tight leading-snug font-heading drop-shadow-sm">
+                            <span className="text-white/95">{bannerMeta.line1}</span>
+                            <span className="text-white sm:ml-2 block sm:inline">{bannerMeta.line2}</span>
                           </h2>
-                          <span className="inline-flex items-center gap-1 text-[10px] sm:text-xs font-black text-red-600 bg-red-50 border border-red-200/70 px-2 sm:px-2.5 py-0.5 rounded-full shadow-2xs whitespace-nowrap">
-                            <span className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse" />
-                            {category.items.length} {category.items.length === 1 ? 'item' : 'items'}
-                          </span>
-                        </div>
-                        {category.description && (
-                          <p className="text-[11px] sm:text-xs md:text-sm text-neutral-500 mt-0.5 sm:mt-1 leading-snug sm:leading-relaxed line-clamp-2 sm:line-clamp-none max-w-xl">
-                            {category.description}
+
+                          <p className="text-[11px] sm:text-xs md:text-sm font-black uppercase text-[#FFE600] tracking-wide mt-1 drop-shadow-xs flex items-center flex-wrap gap-2">
+                            <span>{bannerMeta.subYellow}</span>
                           </p>
-                        )}
+                        </div>
+
+                        {/* Right: Angled Circular Stamp Badge */}
+                        <div className="shrink-0 pl-1 sm:pl-3">
+                          <div className="w-13 h-13 sm:w-15 sm:h-15 md:w-17 md:h-17 rounded-full bg-gradient-to-br from-[#9E000A] to-[#750006] border-2 border-white/30 shadow-md flex flex-col items-center justify-center text-center -rotate-6 transform group-hover:rotate-0 transition-transform duration-300 ring-2 sm:ring-4 ring-black/10">
+                            <span className="text-white font-black text-[10px] sm:text-xs md:text-[13px] tracking-wider uppercase leading-none drop-shadow-xs">
+                              {bannerMeta.badgeTop}
+                            </span>
+                            <span className="w-5 sm:w-6 h-0.5 bg-[#FFE600] my-0.5 sm:my-1 rounded-full"></span>
+                            <span className="text-[#FFE600] font-black text-[8px] sm:text-[9px] md:text-[10px] tracking-widest uppercase leading-none drop-shadow-xs">
+                              {bannerMeta.badgeBottom}
+                            </span>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </div>
+                  );
+                })()}
 
                 {/* 5 items per row on desktop, 2 items on mobile */}
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5 gap-3 sm:gap-3.5 lg:gap-4 gap-y-7 sm:gap-y-9">

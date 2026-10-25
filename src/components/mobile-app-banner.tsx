@@ -14,7 +14,7 @@ export default function MobileAppBanner() {
   ];
 
   return (
-    <section suppressHydrationWarning className="w-full relative overflow-hidden bg-gradient-to-r from-red-700 via-red-600 to-amber-700 text-white border-y border-red-500/40 shadow-xl my-8">
+    <section suppressHydrationWarning className="w-full relative overflow-hidden bg-gradient-to-r from-red-700 via-red-600 to-amber-700 text-white border-y border-red-500/40 shadow-xl my-0">
       {/* Background Lighting Effects & Fast-Food Diagonal Texture */}
       <div className="absolute -top-28 -left-20 w-96 h-96 bg-amber-400/20 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute -bottom-28 -right-20 w-96 h-96 bg-black/40 rounded-full blur-3xl pointer-events-none" />

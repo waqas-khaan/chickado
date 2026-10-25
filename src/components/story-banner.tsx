@@ -28,18 +28,18 @@ export default function StoryBanner({ className = '' }: StoryBannerProps) {
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-20">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
-          {/* Left Column: Visual Food Photography */}
+          {/* Left Column: Visual Dining Experience Photography */}
           <div className="lg:col-span-6 relative">
-            <div className="relative aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl border-4 border-white group bg-neutral-100">
+            <div className="relative aspect-[4/3] sm:aspect-[4/3.5] lg:aspect-[4/4.5] rounded-3xl overflow-hidden shadow-2xl border-4 border-white group bg-neutral-900">
               <Image
-                src="/assets/hero-banner.jpg"
-                alt="Chickado Legendary Fried Chicken & Burger Spread"
+                src="/assets/about-restaurant.jpg"
+                alt="Chickado Flagship Restaurant Dining Area & Bite Into Joy Sign"
                 fill
                 unoptimized
                 sizes="(max-width: 1024px) 100vw, 600px"
-                className="object-cover group-hover:scale-105 transition-transform duration-700"
+                className="object-cover object-[center_36%] group-hover:scale-105 transition-transform duration-700"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
 
               {/* Floating Quality Badges */}
               <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-md text-neutral-900 rounded-xl px-3.5 py-1.5 shadow-lg border border-white flex items-center gap-1.5 text-xs font-black">

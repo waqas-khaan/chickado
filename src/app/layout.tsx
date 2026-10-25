@@ -5,6 +5,7 @@ import TopAnnouncementBar from '@/components/top-announcement-bar';
 import Footer from '@/components/footer';
 import CartDrawer from '@/components/cart-drawer';
 import FloatingWhatsAppButton from '@/components/whatsapp-floating';
+import MenuBookModal from '@/components/menu-book-modal';
 import { brandConfig } from '@/lib/brand';
 
 export const metadata: Metadata = {
@@ -56,6 +57,7 @@ export default function RootLayout({
         <Footer />
         <CartDrawer />
         <FloatingWhatsAppButton />
+        <MenuBookModal />
       </body>
     </html>
   );
