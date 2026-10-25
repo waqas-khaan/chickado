@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import ItemModal from '@/components/item-modal';
 import MenuItemCard, { ItemType } from '@/components/menu-item-card';
+import MenuLoadingFallback from '@/components/menu-loading-fallback';
 import { useCartStore } from '@/lib/cart-store';
 
 interface CategoryType {
@@ -137,6 +138,14 @@ export default function MenuClientView({ categories }: { categories: CategoryTyp
   const [selectedItem, setSelectedItem] = useState<ItemType | null>(null);
 
   const { addItem } = useCartStore();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setMounted(true);
+    }, 350);
+    return () => clearTimeout(t);
+  }, []);
 
   const isManualScrolling = useRef(false);
   const manualScrollTimeout = useRef<NodeJS.Timeout | null>(null);
@@ -333,6 +342,10 @@ export default function MenuClientView({ categories }: { categories: CategoryTyp
       quantity: 1,
     });
   };
+
+  if (!mounted) {
+    return <MenuLoadingFallback />;
+  }
 
   return (
     <div className="min-h-screen bg-[#F4F6F8] pb-24">

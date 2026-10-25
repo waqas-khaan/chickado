@@ -8,8 +8,8 @@ interface MenuLoadingFallbackProps {
 }
 
 export default function MenuLoadingFallback({
-  message = 'Loading Chickado Menu...',
-  subtext = 'Preparing fresh deals, crispy broast & sizzling burgers...',
+  message = 'Preparing Fresh Joy...',
+  subtext = 'Hand-crafted chicken & secret spices',
   className = '',
 }: MenuLoadingFallbackProps) {
   return (
@@ -66,12 +66,14 @@ export default function MenuLoadingFallback({
 
         {/* Dynamic Microcopy */}
         <div className="mt-4 flex flex-col items-center space-y-1">
-          <span className="text-sm sm:text-base font-bold text-neutral-800 tracking-wide">
+          <span className="text-xs sm:text-sm font-black tracking-wider uppercase text-neutral-600 animate-pulse">
             {message}
           </span>
-          <p className="text-xs text-neutral-500 max-w-xs leading-relaxed">
-            {subtext}
-          </p>
+          {subtext && (
+            <p className="text-[11px] text-neutral-400 max-w-xs leading-relaxed">
+              {subtext}
+            </p>
+          )}
         </div>
       </div>
     </section>
