@@ -42,8 +42,29 @@ export default function Navbar() {
     prevCount.current = itemCount;
   }, [itemCount, mounted]);
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  useEffect(() => {
+    const checkModal = () => {
+      const open =
+        document.body.classList.contains('item-modal-open') ||
+        Boolean(document.getElementById('item-modal-dialog')) ||
+        Boolean(document.querySelector('[data-item-modal="true"]'));
+      setIsModalOpen(open);
+    };
+
+    checkModal();
+    const observer = new MutationObserver(checkModal);
+    observer.observe(document.body, { attributes: true, childList: true, subtree: true });
+    return () => observer.disconnect();
+  }, []);
+
   const displayedCount = mounted ? itemCount : 0;
   const displayedSubtotal = mounted ? subtotal : 0;
+
+  if (isModalOpen) {
+    return null;
+  }
 
 
   const navLinks = [

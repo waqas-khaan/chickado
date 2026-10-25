@@ -5,6 +5,7 @@ import { brandConfig } from '@/lib/brand';
 export default function TopAnnouncementBar() {
   return (
     <div
+      id="top-announcement-bar"
       suppressHydrationWarning
       className="hidden md:block bg-gradient-to-r from-neutral-900 via-neutral-800 to-neutral-900 text-white text-[11px] py-2 px-4 border-b border-white/10 font-medium"
     >

@@ -1,22 +1,44 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { WhatsAppIcon } from '@/components/social-icons';
 import { getWhatsAppChatUrl } from '@/lib/whatsapp';
+import { useCartStore } from '@/lib/cart-store';
 
 export default function FloatingWhatsAppButton() {
   const pathname = usePathname();
+  const { isCartDrawerOpen } = useCartStore();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Hide on admin routes
-  if (pathname.startsWith('/admin')) {
+  useEffect(() => {
+    const checkModal = () => {
+      const open =
+        document.body.classList.contains('item-modal-open') ||
+        Boolean(document.getElementById('item-modal-dialog')) ||
+        Boolean(document.querySelector('[data-item-modal="true"]'));
+      setIsModalOpen(open);
+    };
+
+    checkModal();
+    const observer = new MutationObserver(checkModal);
+    observer.observe(document.body, { attributes: true, childList: true, subtree: true });
+    return () => observer.disconnect();
+  }, []);
+
+  // Hide on admin routes or when item modal / cart drawer is open
+  if (pathname.startsWith('/admin') || isModalOpen || isCartDrawerOpen) {
     return null;
   }
 
   const chatUrl = getWhatsAppChatUrl();
 
   return (
-    <aside aria-label="WhatsApp quick chat" className="fixed bottom-6 right-6 z-50 flex items-center group">
+    <aside
+      id="floating-whatsapp-btn"
+      aria-label="WhatsApp quick chat"
+      className="fixed bottom-6 right-6 z-40 flex items-center group transition-all duration-300"
+    >
       <a
         href={chatUrl}
         target="_blank"
