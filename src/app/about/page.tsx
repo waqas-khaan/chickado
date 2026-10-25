@@ -1,6 +1,7 @@
 import React from 'react';
 import { Flame, ShieldCheck, Sparkles, Award } from 'lucide-react';
 import StoryBanner from '@/components/story-banner';
+import RestaurantGallery from '@/components/restaurant-gallery';
 
 export default function AboutPage() {
   return (
@@ -21,6 +22,9 @@ export default function AboutPage() {
 
       {/* Story Banner (Complete Page Width) */}
       <StoryBanner />
+
+      {/* Restaurant Interior Gallery */}
+      <RestaurantGallery />
 
       {/* Core Pillars */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-16">
