@@ -1,6 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
-import { ArrowUpRight, ShoppingBag, Sparkles, Star } from 'lucide-react';
+import { ArrowUpRight, Lock, ShoppingBag, Sparkles, Star } from 'lucide-react';
 import { brandConfig } from '@/lib/brand';
 
 export default function MobileAppBanner() {
@@ -290,10 +290,10 @@ export default function MobileAppBanner() {
                 </div>
               </a>
 
-              {/* Apple App Store Button with Coming Soon Tag (Non-clickable) */}
-              <div className="relative inline-flex group">
-                {/* Premium Golden Specular Coming Soon Badge */}
-                <div className="absolute -top-2.5 right-1.5 z-10 inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-300 via-amber-400 to-amber-500 text-neutral-950 font-black text-[8.5px] uppercase tracking-widest shadow-[0_4px_12px_rgba(0,0,0,0.35),0_0_10px_rgba(245,158,11,0.5)] border border-white/90 select-none pointer-events-none">
+              {/* Apple App Store Button with Coming Soon Tag (Non-clickable, Locked) */}
+              <div className="relative inline-flex group mt-1 sm:mt-0">
+                {/* Premium Golden Specular Coming Soon Badge (Floated above top edge so text is 100% visible) */}
+                <div className="absolute -top-3.5 right-2 z-10 inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-300 via-amber-400 to-amber-500 text-neutral-950 font-black text-[8.5px] uppercase tracking-widest shadow-[0_4px_12px_rgba(0,0,0,0.35),0_0_10px_rgba(245,158,11,0.5)] border border-white/90 select-none pointer-events-none whitespace-nowrap">
                   <span className="relative flex h-1.5 w-1.5 shrink-0">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-600 opacity-75" />
                     <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-red-600" />
@@ -303,7 +303,7 @@ export default function MobileAppBanner() {
 
                 <div
                   aria-disabled="true"
-                  className="bg-neutral-950/95 text-white px-4 sm:px-5 py-2.5 rounded-xl flex items-center gap-3 shadow-md border border-white/20 cursor-not-allowed select-none opacity-90"
+                  className="relative bg-neutral-950/95 text-white pl-4 pr-9 sm:pl-5 sm:pr-10 py-2.5 rounded-xl flex items-center gap-3 shadow-md border border-white/20 cursor-not-allowed select-none opacity-90 min-w-[160px] sm:min-w-[175px]"
                 >
                   {/* Apple Logo SVG */}
                   <svg className="w-5 h-5 fill-white shrink-0 opacity-85" viewBox="0 0 24 24">
@@ -316,6 +316,14 @@ export default function MobileAppBanner() {
                     <span className="text-xs sm:text-sm font-bold text-white tracking-tight leading-tight mt-0.5">
                       App Store
                     </span>
+                  </div>
+
+                  {/* Lock Icon in Right Bottom to clearly show it's locked */}
+                  <div
+                    className="absolute bottom-2 right-2.5 w-4 h-4 sm:w-4.5 sm:h-4.5 rounded-md bg-white/10 flex items-center justify-center text-amber-300 border border-white/10 shadow-xs"
+                    title="Locked • Coming Soon"
+                  >
+                    <Lock className="w-2.5 h-2.5 sm:w-3 sm:h-3 stroke-[2.3]" />
                   </div>
                 </div>
               </div>
