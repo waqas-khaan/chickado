@@ -5,7 +5,6 @@ import { brandConfig } from '@/lib/brand';
 
 interface PromoBannerProps {
   className?: string;
-  fullWidth?: boolean;
 }
 
 interface BannerSlide {
@@ -23,9 +22,9 @@ const BANNERS: BannerSlide[] = [
     id: 'baked-pasta',
     title: 'Baked Pasta - Hot • Cheesy • Loaded',
     description: 'Small Rs 400 (+Tax) • Large Rs 700 (+Tax)',
-    imagePng: '/assets/baked-pasta-banner-hq.png',
+    imagePng: '/assets/banners/baked-pasta-banner-hq.png',
     imageWebpSrcSet:
-      '/assets/baked-pasta-banner-hq.webp 2560w, /assets/baked-pasta-banner-4k.webp 3840w',
+      '/assets/banners/baked-pasta-banner-hq.webp 2560w, /assets/banners/baked-pasta-banner-4k.webp 3840w',
     alt: 'Chickado Baked Pasta - Hot, Cheesy, Loaded. Small Rs 400 +Tax, Large Rs 700 +Tax. Click to Order Now on WhatsApp.',
     whatsappMessage:
       'Hi Chickado! I would like to order the Baked Pasta (Hot • Cheesy • Loaded) - Small (Rs 400) / Large (Rs 700).',
@@ -34,9 +33,9 @@ const BANNERS: BannerSlide[] = [
     id: 'crunch-box',
     title: 'Crunch Box - Hot • Crispy • Delicious',
     description: '1 Chicken Broast Pcs, 1 Crunch Burger, 1 Reg Drink - Rs 650 (+Tax)',
-    imagePng: '/assets/crunch-box-banner-hq.png',
+    imagePng: '/assets/banners/crunch-box-banner-hq.png',
     imageWebpSrcSet:
-      '/assets/crunch-box-banner-hq.webp 2560w, /assets/crunch-box-banner-4k.webp 3840w',
+      '/assets/banners/crunch-box-banner-hq.webp 2560w, /assets/banners/crunch-box-banner-4k.webp 3840w',
     alt: 'Chickado Crunch Box - Hot, Crispy, Delicious. 1 Chicken Broast Pcs, 1 Crunch Burger, 1 Reg Drink. RS 650 (+Tax). Click to Order Now on WhatsApp.',
     whatsappMessage:
       'Hi Chickado! I would like to order the Crunch Box Deal (1 Chicken Broast Pcs, 1 Crunch Burger, 1 Reg Drink) - Rs 650 (+Tax).',
@@ -47,7 +46,6 @@ const AUTO_SLIDE_INTERVAL = 5000;
 
 export default function PromoBanner({
   className = '',
-  fullWidth = true,
 }: PromoBannerProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);

@@ -8,7 +8,9 @@ import { useMenuBookStore } from '@/lib/menu-book-store';
 function playPaperRustle(isMuted: boolean) {
   if (isMuted || typeof window === 'undefined') return;
   try {
-    const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+    const AudioContextClass =
+      window.AudioContext ||
+      (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
     if (!AudioContextClass) return;
     const ctx = new AudioContextClass();
     const duration = 0.4;
@@ -38,7 +40,7 @@ function playPaperRustle(isMuted: boolean) {
     filter.connect(gain);
     gain.connect(ctx.destination);
     whiteNoise.start();
-  } catch (e) {
+  } catch {
     // Audio context not allowed or unsupported
   }
 }

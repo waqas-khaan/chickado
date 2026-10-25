@@ -3,7 +3,6 @@
 import React from 'react';
 import { usePathname } from 'next/navigation';
 import { WhatsAppIcon } from '@/components/social-icons';
-import { brandConfig } from '@/lib/brand';
 import { getWhatsAppChatUrl } from '@/lib/whatsapp';
 
 export default function FloatingWhatsAppButton() {

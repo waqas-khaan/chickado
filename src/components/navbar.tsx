@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { ShoppingBag, Phone, Menu, X, MessageCircle, BookOpen } from 'lucide-react';
+import { Phone, Menu, X, MessageCircle, BookOpen } from 'lucide-react';
 import BucketCartIcon from '@/components/bucket-cart-icon';
 import { brandConfig } from '@/lib/brand';
 import { useCartStore } from '@/lib/cart-store';

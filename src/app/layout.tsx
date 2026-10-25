@@ -26,7 +26,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: `${brandConfig.name} - ${brandConfig.tagline}`,
     description: brandConfig.meta.description,
-    images: [{ url: '/assets/hero-banner.jpg', width: 1200, height: 630 }],
+    images: [{ url: '/assets/banners/hero-banner.jpg', width: 1200, height: 630 }],
   },
 };
 

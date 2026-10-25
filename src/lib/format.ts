@@ -4,11 +4,11 @@ import { brandConfig } from './brand';
  * Format monetary values in PKR with thousand separators: e.g. "Rs 1,650"
  * Supports numbers, strings, and Prisma Decimal objects
  */
-export function formatCurrency(amount: any): string {
+export function formatCurrency(amount: number | string | unknown): string {
   if (amount === null || amount === undefined) {
     return `${brandConfig.currency} 0`;
   }
-  const numeric = typeof amount === 'number' ? amount : Number(amount.toString());
+  const numeric = typeof amount === 'number' ? amount : Number(String(amount));
   if (isNaN(numeric)) {
     return `${brandConfig.currency} 0`;
   }
@@ -29,9 +29,14 @@ export function formatPhoneNumber(phone: string): string {
 /**
  * Format date/time readable
  */
-export function formatDateTime(date: any): string {
+export function formatDateTime(date: string | number | Date | unknown): string {
   if (!date) return '-';
-  const d = typeof date === 'string' ? new Date(date) : date instanceof Date ? date : new Date(date);
+  const d =
+    typeof date === 'string' || typeof date === 'number'
+      ? new Date(date)
+      : date instanceof Date
+      ? date
+      : new Date(String(date));
   return new Intl.DateTimeFormat('en-PK', {
     day: '2-digit',
     month: 'short',
@@ -45,9 +50,14 @@ export function formatDateTime(date: any): string {
 /**
  * Format date only
  */
-export function formatDate(date: any): string {
+export function formatDate(date: string | number | Date | unknown): string {
   if (!date) return '-';
-  const d = typeof date === 'string' ? new Date(date) : date instanceof Date ? date : new Date(date);
+  const d =
+    typeof date === 'string' || typeof date === 'number'
+      ? new Date(date)
+      : date instanceof Date
+      ? date
+      : new Date(String(date));
   return new Intl.DateTimeFormat('en-PK', {
     day: '2-digit',
     month: 'short',

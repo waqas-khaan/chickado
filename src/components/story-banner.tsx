@@ -32,7 +32,7 @@ export default function StoryBanner({ className = '' }: StoryBannerProps) {
           <div className="lg:col-span-6 relative">
             <div className="relative aspect-[4/3] sm:aspect-[4/3.5] lg:aspect-[4/4.5] rounded-3xl overflow-hidden shadow-2xl border-4 border-white group bg-neutral-900">
               <Image
-                src="/assets/about-restaurant.jpg"
+                src="/assets/banners/about-restaurant.jpg"
                 alt="Chickado Flagship Restaurant Dining Area & Bite Into Joy Sign"
                 fill
                 unoptimized
