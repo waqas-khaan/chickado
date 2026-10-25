@@ -60,10 +60,6 @@ export default function PromoBanner({
     setCurrentIndex((prev) => (prev - 1 + BANNERS.length) % BANNERS.length);
   }, []);
 
-  const goToSlide = (index: number) => {
-    setCurrentIndex(index);
-  };
-
   // Auto-slide every 5 seconds unless paused by hover or touch
   useEffect(() => {
     if (isPaused) return;
@@ -154,25 +150,6 @@ export default function PromoBanner({
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none bg-gradient-to-tr from-white/0 via-white/5 to-white/0" />
               </a>
             </div>
-          );
-        })}
-      </div>
-
-      {/* Slide Indicators / Pill Dots */}
-      <div className="absolute bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/50 backdrop-blur-md border border-white/15 shadow-xl">
-        {BANNERS.map((banner, index) => {
-          const isActive = currentIndex === index;
-          return (
-            <button
-              key={banner.id}
-              onClick={() => goToSlide(index)}
-              aria-label={`Go to slide ${index + 1}: ${banner.title}`}
-              className={`h-2 rounded-full transition-all duration-500 cursor-pointer ${
-                isActive
-                  ? 'w-7 bg-gradient-to-r from-red-500 via-amber-400 to-amber-300 shadow-[0_0_10px_rgba(245,158,11,0.6)]'
-                  : 'w-2 bg-white/40 hover:bg-white/80'
-              }`}
-            />
           );
         })}
       </div>
