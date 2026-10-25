@@ -269,6 +269,23 @@ h1, h2, h3, h4, h5, h6, .font-heading {
   animation: shimmer 1.5s infinite;
 }
 
+/* Indeterminate Progress Bar */
+@keyframes indeterminateProgress {
+  0% {
+    transform: translateX(-120%);
+  }
+  50% {
+    transform: translateX(30%);
+  }
+  100% {
+    transform: translateX(180%);
+  }
+}
+
+.animate-indeterminate {
+  animation: indeterminateProgress 1.4s cubic-bezier(0.65, 0.815, 0.735, 0.395) infinite;
+}
+
 @keyframes floatPizza {
   0% {
     transform: translateY(0px) rotate(-6deg) scale(1);
