@@ -6,6 +6,7 @@ import Footer from '@/components/footer';
 import CartDrawer from '@/components/cart-drawer';
 import FloatingWhatsAppButton from '@/components/whatsapp-floating';
 import MenuBookModal from '@/components/menu-book-modal';
+import PageLoader from '@/components/page-loader';
 import { brandConfig } from '@/lib/brand';
 
 export const metadata: Metadata = {
@@ -51,6 +52,7 @@ export default function RootLayout({
         <div className="fixed top-1/3 -right-40 w-[30rem] h-[30rem] bg-amber-500/10 rounded-full blur-[100px] pointer-events-none -z-10" />
         <div className="fixed -bottom-40 left-1/4 w-[36rem] h-[36rem] bg-red-600/8 rounded-full blur-[120px] pointer-events-none -z-10" />
 
+        <PageLoader />
         <TopAnnouncementBar />
         <Navbar />
         <main className="flex-1 relative z-10">{children}</main>
