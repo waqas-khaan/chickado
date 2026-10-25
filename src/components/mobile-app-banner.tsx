@@ -37,7 +37,7 @@ export default function MobileAppBanner() {
           {/* Animated 3D Full Gourmet Pizza */}
           <div className="relative w-28 h-28 sm:w-40 sm:h-40 md:w-52 md:h-52 lg:w-64 lg:h-64 xl:w-76 xl:h-76 animate-float-pizza drop-shadow-[0_25px_40px_rgba(0,0,0,0.6)]">
             <Image
-              src="/assets/banners/gourmet-full-pizza.png"
+              src="/assets/banners/gourmet-full-pizza.webp"
               alt="Chickado Gourmet Full Pizza"
               fill
               unoptimized

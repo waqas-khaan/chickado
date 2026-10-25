@@ -21,7 +21,7 @@ export const brandConfig = {
   openingHours: '11:00 AM - 02:00 AM Daily',
   
   // Centralized logo path
-  logoPath: '/assets/brand/logo.png',
+  logoPath: '/assets/brand/logo.webp',
   
   // Google Maps Integration
   googleMaps: {

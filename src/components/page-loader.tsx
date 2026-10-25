@@ -12,29 +12,37 @@ export default function PageLoader() {
   useEffect(() => {
     setMounted(true);
 
+    // If already shown during this session, dismiss immediately
+    if (typeof window !== 'undefined' && sessionStorage.getItem('chickado_splash_done')) {
+      setLoading(false);
+      return;
+    }
+
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('chickado_splash_done', 'true');
+    }
+
     // Lock body scroll while loader is visible
     document.body.style.overflow = 'hidden';
 
-    // Smooth staggered progress bar animation (0 -> 100%)
-    const p1 = setTimeout(() => setProgress(35), 180);
-    const p2 = setTimeout(() => setProgress(72), 650);
-    const p3 = setTimeout(() => setProgress(100), 1200);
+    // Swift, snappy progress bar animation
+    const p1 = setTimeout(() => setProgress(50), 60);
+    const p2 = setTimeout(() => setProgress(100), 220);
 
-    // Trigger graceful exit fade
+    // Graceful exit fade
     const exitTimer = setTimeout(() => {
       setIsExiting(true);
-    }, 1450);
+    }, 380);
 
-    // Completely unmount loader after fade-out transition
+    // Completely unmount loader
     const doneTimer = setTimeout(() => {
       setLoading(false);
       document.body.style.overflow = '';
-    }, 1900);
+    }, 550);
 
     return () => {
       clearTimeout(p1);
       clearTimeout(p2);
-      clearTimeout(p3);
       clearTimeout(exitTimer);
       clearTimeout(doneTimer);
       document.body.style.overflow = '';
@@ -77,7 +85,7 @@ export default function PageLoader() {
           {/* Chickado Official Mascot Logo Image */}
           <div className="relative w-36 h-36 sm:w-44 sm:h-44 rounded-full overflow-hidden shadow-[0_15px_45px_rgba(239,68,68,0.45)] border-2 border-amber-400/60 bg-white">
             <Image
-              src="/assets/brand/logo.jpg"
+              src="/assets/brand/logo.webp"
               alt="Chickado Logo"
               fill
               priority

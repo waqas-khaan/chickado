@@ -19,12 +19,68 @@ export interface ItemType {
 
 interface MenuItemCardProps {
   item: ItemType;
+  priority?: boolean;
   onSelect: (item: ItemType) => void;
   onQuickAdd: (item: ItemType, e: React.MouseEvent) => void;
 }
 
-export default function MenuItemCard({ item, onSelect, onQuickAdd }: MenuItemCardProps) {
+export default function MenuItemCard({ item, priority = false, onSelect, onQuickAdd }: MenuItemCardProps) {
   const isComingSoon = item.isAvailable === false;
+  const [imgSrc, setImgSrc] = React.useState<string | null>(item.image || null);
+  const [hasError, setHasError] = React.useState(false);
+  const [retryStep, setRetryStep] = React.useState(0);
+
+  // Synchronize when item changes
+  React.useEffect(() => {
+    setImgSrc(item.image || null);
+    setHasError(false);
+    setRetryStep(0);
+  }, [item.image]);
+
+  const handleImageError = () => {
+    if (!imgSrc) {
+      setHasError(true);
+      return;
+    }
+
+    if (retryStep === 0) {
+      // Step 1: Try swapping folder casing (fries <-> Fries)
+      setRetryStep(1);
+      if (imgSrc.includes('/menu/fries/')) {
+        setImgSrc(imgSrc.replace('/menu/fries/', '/menu/Fries/'));
+        return;
+      }
+      if (imgSrc.includes('/menu/Fries/')) {
+        setImgSrc(imgSrc.replace('/menu/Fries/', '/menu/fries/'));
+        return;
+      }
+    }
+
+    if (retryStep <= 1) {
+      // Step 2: Try .jpeg fallback if .webp failed
+      setRetryStep(2);
+      if (imgSrc.endsWith('.webp')) {
+        setImgSrc(imgSrc.replace(/\.webp$/i, '.jpeg'));
+        return;
+      }
+    }
+
+    if (retryStep <= 2) {
+      // Step 3: Handle Bihari / Behari spelling variants
+      setRetryStep(3);
+      if (imgSrc.includes('Bihari')) {
+        setImgSrc(imgSrc.replace('Bihari', 'Behari'));
+        return;
+      }
+      if (imgSrc.includes('Behari')) {
+        setImgSrc(imgSrc.replace('Behari', 'Bihari'));
+        return;
+      }
+    }
+
+    // Step 4: Graceful brand fallback
+    setHasError(true);
+  };
 
   const handleCardClick = (e: React.MouseEvent) => {
     if (isComingSoon) {
@@ -61,14 +117,18 @@ export default function MenuItemCard({ item, onSelect, onQuickAdd }: MenuItemCar
       )}
 
       {/* 2. Centered Food Photography */}
-      <div className="relative w-full h-28 xs:h-32 sm:h-32 md:h-36 lg:h-32 xl:h-36 my-1 rounded-lg sm:rounded-xl overflow-hidden bg-neutral-50 flex items-center justify-center">
-        {item.image ? (
+      <div className="relative w-full h-28 xs:h-32 sm:h-32 md:h-36 lg:h-32 xl:h-36 my-1 rounded-lg sm:rounded-xl overflow-hidden bg-neutral-100 flex items-center justify-center">
+        {imgSrc && !hasError ? (
           <Image
-            src={item.image}
+            src={imgSrc}
             alt={item.name}
             fill
             unoptimized
+            priority={priority}
+            loading={priority ? 'eager' : 'lazy'}
+            decoding="async"
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 20vw"
+            onError={handleImageError}
             className={`object-cover transition-transform duration-500 ${
               isComingSoon ? 'opacity-90' : 'group-hover:scale-105'
             }`}

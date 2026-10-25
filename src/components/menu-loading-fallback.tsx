@@ -39,7 +39,7 @@ export default function MenuLoadingFallback({
           {/* Official Chickado Mascot Logo */}
           <div className="relative w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden shadow-[0_12px_32px_rgba(220,38,38,0.22)] border-2 border-amber-400/80 bg-white">
             <Image
-              src="/assets/brand/logo.jpg"
+              src="/assets/brand/logo.webp"
               alt="Chickado Logo"
               fill
               priority

@@ -32,6 +32,8 @@ export default function ItemModal({ item, isOpen, onClose }: ItemModalProps) {
   const [quantity, setQuantity] = useState(1);
   const [notes, setNotes] = useState('');
   const [mounted, setMounted] = useState(false);
+  const [modalImgSrc, setModalImgSrc] = useState<string | null>(null);
+  const [modalImgError, setModalImgError] = useState(false);
 
   React.useEffect(() => {
     setMounted(true);
@@ -49,8 +51,38 @@ export default function ItemModal({ item, isOpen, onClose }: ItemModalProps) {
       setSelectedAddons([]);
       setQuantity(1);
       setNotes('');
+      setModalImgSrc(item.image || null);
+      setModalImgError(false);
     }
   }, [item]);
+
+  const handleModalImgError = () => {
+    if (!modalImgSrc) {
+      setModalImgError(true);
+      return;
+    }
+    if (modalImgSrc.includes('/menu/fries/')) {
+      setModalImgSrc(modalImgSrc.replace('/menu/fries/', '/menu/Fries/'));
+      return;
+    }
+    if (modalImgSrc.includes('/menu/Fries/')) {
+      setModalImgSrc(modalImgSrc.replace('/menu/Fries/', '/menu/fries/'));
+      return;
+    }
+    if (modalImgSrc.endsWith('.webp')) {
+      setModalImgSrc(modalImgSrc.replace(/\.webp$/i, '.jpeg'));
+      return;
+    }
+    if (modalImgSrc.includes('Bihari')) {
+      setModalImgSrc(modalImgSrc.replace('Bihari', 'Behari'));
+      return;
+    }
+    if (modalImgSrc.includes('Behari')) {
+      setModalImgSrc(modalImgSrc.replace('Behari', 'Bihari'));
+      return;
+    }
+    setModalImgError(true);
+  };
 
   // Synchronize body class for hiding navbar & floating elements when modal is open
   React.useEffect(() => {
@@ -130,13 +162,14 @@ export default function ItemModal({ item, isOpen, onClose }: ItemModalProps) {
       <div className="glass-modal max-w-lg w-full overflow-hidden shadow-2xl animate-scaleUp text-neutral-900">
         {/* Header Image */}
         <div className="relative h-64 w-full bg-neutral-950 overflow-hidden">
-          {item.image ? (
+          {modalImgSrc && !modalImgError ? (
             <Image
-              src={item.image}
+              src={modalImgSrc}
               alt={item.name}
               fill
               unoptimized
               sizes="512px"
+              onError={handleModalImgError}
               className="object-cover"
             />
           ) : (

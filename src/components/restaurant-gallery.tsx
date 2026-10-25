@@ -18,6 +18,7 @@ import {
 export interface GalleryPhoto {
   id: string;
   src: string;
+  thumbSrc: string;
   title: string;
   subtitle: string;
   category: 'hall' | 'lounge' | 'neon';
@@ -27,7 +28,8 @@ export interface GalleryPhoto {
 const GALLERY_PHOTOS: GalleryPhoto[] = [
   {
     id: '1',
-    src: '/assets/gallery/interior-01.jpg',
+    src: '/assets/gallery/interior-01.webp',
+    thumbSrc: '/assets/gallery/interior-01-thumb.webp',
     title: 'Plush Velvet Lounge',
     subtitle: 'Curved red velvet seating framed by rose trellis arches and glowing mascot',
     category: 'lounge',
@@ -35,7 +37,8 @@ const GALLERY_PHOTOS: GalleryPhoto[] = [
   },
   {
     id: '2',
-    src: '/assets/gallery/interior-02.jpg',
+    src: '/assets/gallery/interior-02.webp',
+    thumbSrc: '/assets/gallery/interior-02-thumb.webp',
     title: 'Executive Dining Suite',
     subtitle: 'Gold-veined black marble tables with ambient greenery and entertainment displays',
     category: 'hall',
@@ -43,7 +46,8 @@ const GALLERY_PHOTOS: GalleryPhoto[] = [
   },
   {
     id: '3',
-    src: '/assets/gallery/interior-03.jpg',
+    src: '/assets/gallery/interior-03.webp',
+    thumbSrc: '/assets/gallery/interior-03-thumb.webp',
     title: 'Terrace-View Dining',
     subtitle: 'Sleek executive seating overlooking the sunlit outdoor terrace and glass wall',
     category: 'hall',
@@ -51,7 +55,8 @@ const GALLERY_PHOTOS: GalleryPhoto[] = [
   },
   {
     id: '4',
-    src: '/assets/gallery/interior-04.jpg',
+    src: '/assets/gallery/interior-04.webp',
+    thumbSrc: '/assets/gallery/interior-04-thumb.webp',
     title: 'Illuminated Staircase Table',
     subtitle: 'Family banquet table set against our signature warm golden-lit staircase',
     category: 'hall',
@@ -59,7 +64,8 @@ const GALLERY_PHOTOS: GalleryPhoto[] = [
   },
   {
     id: '5',
-    src: '/assets/gallery/interior-05.jpg',
+    src: '/assets/gallery/interior-05.webp',
+    thumbSrc: '/assets/gallery/interior-05-thumb.webp',
     title: 'Grand Banquet Setting',
     subtitle: 'Warm architectural lighting and marble table arrangements for large groups',
     category: 'hall',
@@ -67,7 +73,8 @@ const GALLERY_PHOTOS: GalleryPhoto[] = [
   },
   {
     id: '6',
-    src: '/assets/gallery/interior-06.jpg',
+    src: '/assets/gallery/interior-06.webp',
+    thumbSrc: '/assets/gallery/interior-06-thumb.webp',
     title: 'Chickado Mascot Wall',
     subtitle: 'Vibrant neon 3D Chickado mascot sign radiating warmth over the dining floor',
     category: 'neon',
@@ -75,7 +82,8 @@ const GALLERY_PHOTOS: GalleryPhoto[] = [
   },
   {
     id: '7',
-    src: '/assets/gallery/interior-07.jpg',
+    src: '/assets/gallery/interior-07.webp',
+    thumbSrc: '/assets/gallery/interior-07-thumb.webp',
     title: 'Main Saddar Dining Floor',
     subtitle: 'Expansive view of our flagship restaurant floor with panoramic street windows',
     category: 'hall',
@@ -83,7 +91,8 @@ const GALLERY_PHOTOS: GalleryPhoto[] = [
   },
   {
     id: '8',
-    src: '/assets/gallery/interior-08.jpg',
+    src: '/assets/gallery/interior-08.webp',
+    thumbSrc: '/assets/gallery/interior-08-thumb.webp',
     title: 'Signature Dining Corner',
     subtitle: 'Bespoke leather seating framed by floral arch mirror and Chickado branding',
     category: 'neon',
@@ -91,7 +100,8 @@ const GALLERY_PHOTOS: GalleryPhoto[] = [
   },
   {
     id: '9',
-    src: '/assets/gallery/interior-09.jpg',
+    src: '/assets/gallery/interior-09.webp',
+    thumbSrc: '/assets/gallery/interior-09-thumb.webp',
     title: 'Celebration Floral Arch',
     subtitle: 'Pastel balloon installation and floral archway welcoming party celebrations',
     category: 'lounge',
@@ -99,7 +109,8 @@ const GALLERY_PHOTOS: GalleryPhoto[] = [
   },
   {
     id: '10',
-    src: '/assets/gallery/interior-10.jpg',
+    src: '/assets/gallery/interior-10.webp',
+    thumbSrc: '/assets/gallery/interior-10-thumb.webp',
     title: 'Contemporary Place Setting',
     subtitle: 'Impeccable table arrangements with digital smart menus and polished cutlery',
     category: 'hall',
@@ -107,7 +118,8 @@ const GALLERY_PHOTOS: GalleryPhoto[] = [
   },
   {
     id: '11',
-    src: '/assets/gallery/interior-11.jpg',
+    src: '/assets/gallery/interior-11.webp',
+    thumbSrc: '/assets/gallery/interior-11-thumb.webp',
     title: 'Central Dining Vista',
     subtitle: 'Comfortable bucket seating and refined modern finishes across the dining area',
     category: 'hall',
@@ -115,7 +127,8 @@ const GALLERY_PHOTOS: GalleryPhoto[] = [
   },
   {
     id: '12',
-    src: '/assets/gallery/interior-12.jpg',
+    src: '/assets/gallery/interior-12.webp',
+    thumbSrc: '/assets/gallery/interior-12-thumb.webp',
     title: 'Botanical Infinity Glow Wall',
     subtitle: 'Backlit emerald botanical garden installation reflected in polished marble',
     category: 'neon',
@@ -123,7 +136,8 @@ const GALLERY_PHOTOS: GalleryPhoto[] = [
   },
   {
     id: '13',
-    src: '/assets/gallery/interior-13.jpg',
+    src: '/assets/gallery/interior-13.webp',
+    thumbSrc: '/assets/gallery/interior-13-thumb.webp',
     title: 'Bite Into Joy Mascot Icon',
     subtitle: 'Artistic close-up of our signature mascot sign surrounded by fresh white blossoms',
     category: 'neon',
@@ -291,9 +305,11 @@ export default function RestaurantGallery() {
             >
               {/* Image */}
               <Image
-                src={photo.src}
+                src={photo.thumbSrc || photo.src}
                 alt={photo.title}
                 fill
+                priority={index < 4}
+                loading={index < 4 ? 'eager' : 'lazy'}
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-108"
                 unoptimized
@@ -430,7 +446,7 @@ export default function RestaurantGallery() {
                     }`}
                   >
                     <Image
-                      src={photo.src}
+                      src={photo.thumbSrc || photo.src}
                       alt={photo.title}
                       fill
                       sizes="60px"
