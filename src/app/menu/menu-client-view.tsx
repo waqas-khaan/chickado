@@ -200,23 +200,12 @@ export default function MenuClientView({ categories }: { categories: CategoryTyp
       .filter((cat) => !cat.isComingSoon && cat.items.length > 0);
   }, [categories, searchQuery, sortBy]);
 
-  // When a specific category is selected, show only that category's items. If 'all', show all categories.
-  const displayedCategories = useMemo(() => {
-    if (activeCategory === 'all') {
-      return filteredCategories;
-    }
-    const matched = filteredCategories.filter((cat) => cat.slug === activeCategory);
-    return matched.length > 0 ? matched : filteredCategories;
-  }, [filteredCategories, activeCategory]);
-
   const totalVisibleItems = useMemo(() => {
-    return displayedCategories.reduce((acc, cat) => acc + cat.items.length, 0);
-  }, [displayedCategories]);
+    return filteredCategories.reduce((acc, cat) => acc + cat.items.length, 0);
+  }, [filteredCategories]);
 
-  // Scrollspy: update active category as items scroll ONLY when viewing all items
+  // Scrollspy: update active category as items scroll
   useEffect(() => {
-    if (activeCategory !== 'all') return;
-
     const handleScroll = () => {
       if (isManualScrolling.current) return;
 
@@ -304,21 +293,45 @@ export default function MenuClientView({ categories }: { categories: CategoryTyp
     }
     manualScrollTimeout.current = setTimeout(() => {
       isManualScrolling.current = false;
-    }, 400);
+    }, 850);
 
     const scrollBuffer = 175;
-    const container = document.getElementById('menu-items-container');
-    if (container) {
-      const y = container.getBoundingClientRect().top + window.scrollY - scrollBuffer;
-      window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+
+    if (slug === 'all') {
+      const container = document.getElementById('menu-items-container');
+      if (container) {
+        const y = container.getBoundingClientRect().top + window.scrollY - scrollBuffer;
+        window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    } else {
+      const el = document.getElementById(`category-${slug}`);
+      if (el) {
+        const y = el.getBoundingClientRect().top + window.scrollY - scrollBuffer;
+        window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+      }
     }
   };
 
   // Handle direct URL query param (e.g. ?category=deals-combos)
   useEffect(() => {
     const initialCategory = searchParams.get('category');
-    if (initialCategory) {
+    if (initialCategory && initialCategory !== 'all') {
       setActiveCategory(initialCategory);
+      isManualScrolling.current = true;
+      const timer = setTimeout(() => {
+        const el = document.getElementById(`category-${initialCategory}`);
+        if (el) {
+          const scrollBuffer = 175;
+          const y = el.getBoundingClientRect().top + window.scrollY - scrollBuffer;
+          window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+        }
+        setTimeout(() => {
+          isManualScrolling.current = false;
+        }, 850);
+      }, 200);
+      return () => clearTimeout(timer);
     }
   }, [searchParams]);
 
@@ -550,30 +563,7 @@ export default function MenuClientView({ categories }: { categories: CategoryTyp
           </div>
         ) : (
           <div id="menu-items-container" className="space-y-12 sm:space-y-16 pb-16">
-            {/* Filter Status Alert Banner when a single category is active */}
-            {activeCategory !== 'all' && (
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-4 py-3 bg-white/90 backdrop-blur-md rounded-2xl border border-neutral-200/90 shadow-2xs">
-                <div className="flex items-center gap-2.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-red-600 animate-pulse" />
-                  <span className="text-xs font-black uppercase tracking-wider text-neutral-900">
-                    Showing {displayedCategories[0]?.name || activeCategory}
-                  </span>
-                  <span className="text-[11px] font-bold text-neutral-500">
-                    ({totalVisibleItems} {totalVisibleItems === 1 ? 'item' : 'items'})
-                  </span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => handleCategoryClick('all')}
-                  className="inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100/80 px-3.5 py-1.5 rounded-xl border border-red-200/60 transition active:scale-95 cursor-pointer self-start sm:self-auto"
-                >
-                  <span>Show All Categories</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            )}
-
-            {displayedCategories.map((category, catIdx) => (
+            {filteredCategories.map((category, catIdx) => (
               <section
                 key={category.id}
                 id={`category-${category.slug}`}
