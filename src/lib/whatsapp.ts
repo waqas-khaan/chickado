@@ -175,54 +175,35 @@ export function isMobileDevice(): boolean {
 }
 
 /**
- * Generate a direct WhatsApp URL that launches WhatsApp directly without
- * loading the intermediate api.whatsapp.com / wa.me web page.
- * - On Mobile: Uses native `whatsapp://send?phone=...&text=...` URI scheme
- * - On Desktop: Uses `https://web.whatsapp.com/send?phone=...&text=...`
+ * Generate a direct WhatsApp URL that launches WhatsApp directly in the
+ * native application (mobile or desktop app) without opening any intermediate
+ * web pages or WhatsApp Web (web.whatsapp.com / wa.me / api.whatsapp.com).
+ * Uses native `whatsapp://send?phone=...&text=...` URI scheme.
  */
 export function buildDirectWhatsAppUrl(phone: string, text?: string): string {
   const cleanPhone = phone.replace(/[^\d]/g, '');
   const encodedText = text ? encodeURIComponent(text) : '';
   const textQuery = encodedText ? `&text=${encodedText}` : '';
-
-  if (typeof window !== 'undefined') {
-    if (isMobileDevice()) {
-      return `whatsapp://send?phone=${cleanPhone}${textQuery}`;
-    }
-    return `https://web.whatsapp.com/send?phone=${cleanPhone}${textQuery}`;
-  }
-
-  // Fallback for SSR / static generation: default to mobile scheme for direct app opening
   return `whatsapp://send?phone=${cleanPhone}${textQuery}`;
 }
 
 /**
- * Programmatically opens WhatsApp directly without opening the intermediate web landing page.
- * - On Mobile: triggers custom native app scheme `whatsapp://send` directly into the app
- * - On Desktop: opens WhatsApp Web directly in a new tab
+ * Programmatically opens WhatsApp directly in the native application (mobile or desktop)
+ * without opening any intermediate web landing page or WhatsApp Web.
  */
 export function openWhatsAppDirectly(phone: string, text?: string): void {
   if (typeof window === 'undefined') return;
 
-  const cleanPhone = phone.replace(/[^\d]/g, '');
-  const encodedText = text ? encodeURIComponent(text) : '';
-  const textQuery = encodedText ? `&text=${encodedText}` : '';
+  const appUrl = buildDirectWhatsAppUrl(phone, text);
 
-  if (isMobileDevice()) {
-    const mobileUrl = `whatsapp://send?phone=${cleanPhone}${textQuery}`;
-    try {
-      const link = document.createElement('a');
-      link.href = mobileUrl;
-      link.rel = 'noopener noreferrer';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } catch {
-      window.location.href = mobileUrl;
-    }
-  } else {
-    const desktopUrl = `https://web.whatsapp.com/send?phone=${cleanPhone}${textQuery}`;
-    window.open(desktopUrl, '_blank', 'noopener,noreferrer');
+  try {
+    const link = document.createElement('a');
+    link.href = appUrl;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } catch {
+    window.location.href = appUrl;
   }
 }
 

@@ -16,6 +16,7 @@ export default function WhatsAppDirectLink({
   onClick,
   href,
   className,
+  target,
   ...props
 }: WhatsAppDirectLinkProps) {
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
