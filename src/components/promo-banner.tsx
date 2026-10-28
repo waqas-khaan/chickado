@@ -108,7 +108,7 @@ export default function PromoBanner({
 
   return (
     <section
-      className={`relative w-full overflow-hidden bg-[#3A020F] text-white border-b border-red-950/40 shadow-sm group/slider ${className}`}
+      className={`relative w-full overflow-hidden bg-[#3A020F] text-white border-b border-red-950/40 shadow-sm rounded-none group/slider ${className}`}
       aria-label="Promotional Deals Billboard Carousel"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
@@ -118,17 +118,17 @@ export default function PromoBanner({
     >
       {/* Sliding Billboard Track */}
       <div
-        className="flex w-full transition-transform duration-700 ease-in-out will-change-transform"
+        className="flex w-full transition-transform duration-700 ease-in-out will-change-transform rounded-none"
         style={{ transform: `translateX(-${currentIndex * 100}%)` }}
       >
         {BANNERS.map((banner, index) => {
           return (
             <div
               key={banner.id}
-              className="min-w-full w-full flex-shrink-0 relative aspect-[1024/340] min-h-[140px] sm:min-h-0 bg-[#3A020F] overflow-hidden select-none pointer-events-none"
+              className="min-w-full w-full flex-shrink-0 relative aspect-[1024/340] min-h-[140px] sm:min-h-0 bg-[#3A020F] overflow-hidden select-none pointer-events-none rounded-none"
             >
               {/* Responsive Ultra-HD 4K/2.5K Picture Elements for Razor-Sharp Full-Width Display */}
-              <picture className="block w-full h-full">
+              <picture className="block w-full h-full rounded-none">
                 <source
                   type="image/webp"
                   srcSet={banner.imageWebpSrcSet}
@@ -137,7 +137,7 @@ export default function PromoBanner({
                 <img
                   src={banner.imagePng}
                   alt={banner.alt}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover rounded-none"
                   loading="eager"
                   fetchPriority={index === 0 ? 'high' : 'auto'}
                 />
