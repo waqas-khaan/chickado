@@ -2,7 +2,7 @@ import { brandConfig } from './brand';
 
 /**
  * Format monetary values in PKR with thousand separators: e.g. "Rs 1,650"
- * Supports numbers, strings, and Prisma Decimal objects
+ * Supports numbers and strings
  */
 export function formatCurrency(amount: number | string | unknown): string {
   if (amount === null || amount === undefined) {

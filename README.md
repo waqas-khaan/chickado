@@ -29,7 +29,6 @@ A modern, fast, and responsive full-stack restaurant web application built for *
 - **Framework**: [Next.js 16](https://nextjs.org/) (App Router) + [React 19](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)
 - **Styling**: [Tailwind CSS](https://tailwindcss.com/) + [Lucide Icons](https://lucide.dev/)
 - **State Management**: [Zustand](https://github.com/pmndrs/zustand) with `persist` middleware
-- **Database ORM**: [Prisma](https://www.prisma.io/) (MySQL schema ready)
 - **Containerization**: [Docker](https://www.docker.com/) & Docker Compose
 
 ---
@@ -40,9 +39,6 @@ A modern, fast, and responsive full-stack restaurant web application built for *
 chickado/
 ├── docker-compose.yml              # Production container orchestration
 ├── Dockerfile                      # Multi-stage optimized Node.js Alpine build
-├── prisma/
-│   ├── schema.prisma               # Prisma relational MySQL schema
-│   └── seed.ts                     # Database seed definitions
 ├── public/
 │   ├── assets/                     # Store branding & food photography
 │   │   ├── logo.png                # Main Chickado brand logo
@@ -173,9 +169,6 @@ Tax: Rs 88
 | `npm run build` | Compiles the production build |
 | `npm run start` | Starts the production server |
 | `npm run lint` | Runs ESLint checks |
-| `npm run db:push` | Pushes Prisma schema to the configured MySQL database |
-| `npm run db:seed` | Populates the database with initial categories and items |
-| `npm run db:studio` | Launches Prisma Studio GUI |
 
 ---
 
