@@ -137,15 +137,17 @@ export default function Navbar() {
               );
             })}
 
-            {/* Menu Book Button */}
-            <Link
-              href="/menu-book"
+            {/* Menu Book PDF Button */}
+            <a
+              href="/menu-book/chickado-menu.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
               className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-heading font-black tracking-wider transition bg-gradient-to-r from-red-600 via-amber-600 to-red-600 text-white shadow-sm hover:shadow-red-600/30 hover:scale-105 active:scale-95 ml-1 border border-amber-400/30 cursor-pointer"
-              title="Open Official Chickado Menu Book"
+              title="Open Official Chickado Menu PDF"
             >
               <BookOpen className="w-3.5 h-3.5" />
               <span>MENU BOOK</span>
-            </Link>
+            </a>
           </nav>
 
           {/* Action CTAs: Bucket Cart Button, Mobile Hamburger */}
@@ -199,16 +201,18 @@ export default function Navbar() {
               </Link>
             ))}
 
-            {/* Menu Book in Mobile Hamburger Menu */}
-            <Link
-              href="/menu-book"
+            {/* Menu Book PDF Button in Mobile Menu */}
+            <a
+              href="/menu-book/chickado-menu.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
               onClick={() => setMobileMenuOpen(false)}
               className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-heading font-black tracking-wider transition bg-gradient-to-r from-red-600 via-amber-600 to-red-600 text-white shadow-md hover:shadow-red-600/30 active:scale-98 border border-amber-400/30 cursor-pointer"
-              title="Open Official Chickado Menu Book"
+              title="Open Official Chickado Menu PDF"
             >
               <BookOpen className="w-4 h-4" />
-              <span>MENU BOOK</span>
-            </Link>
+              <span>MENU BOOK (PDF)</span>
+            </a>
 
             <div className="pt-3 border-t border-neutral-200/80 flex flex-col gap-2">
               <a
