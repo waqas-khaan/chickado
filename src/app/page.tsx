@@ -151,7 +151,7 @@ export default function HomePage() {
 
           {/* Trust Value Props Cards (Fills space with rich glassmorphism) */}
           <div className="pt-5 border-t border-neutral-200/60 grid grid-cols-1 sm:grid-cols-3 gap-3.5 max-w-3xl mx-auto">
-            <div className="p-3.5 rounded-2xl bg-white/70 backdrop-blur-md border border-white/80 shadow-xs flex items-center justify-center gap-3 text-left">
+            <div className="p-3.5 rounded-2xl bg-white backdrop-blur-md border border-black shadow-xs flex items-center justify-center gap-3 text-left">
               <div className="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center shrink-0">
                 <Clock className="w-4.5 h-4.5" />
               </div>
@@ -161,7 +161,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="p-3.5 rounded-2xl bg-white/70 backdrop-blur-md border border-white/80 shadow-xs flex items-center justify-center gap-3 text-left">
+            <div className="p-3.5 rounded-2xl bg-white backdrop-blur-md border border-black shadow-xs flex items-center justify-center gap-3 text-left">
               <div className="w-9 h-9 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0">
                 <ShieldCheck className="w-4.5 h-4.5" />
               </div>
@@ -171,7 +171,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="p-3.5 rounded-2xl bg-white/70 backdrop-blur-md border border-white/80 shadow-xs flex items-center justify-center gap-3 text-left">
+            <div className="p-3.5 rounded-2xl bg-white backdrop-blur-md border border-black shadow-xs flex items-center justify-center gap-3 text-left">
               <div className="w-9 h-9 rounded-xl bg-red-500/10 text-red-600 flex items-center justify-center shrink-0">
                 <Flame className="w-4.5 h-4.5" />
               </div>
