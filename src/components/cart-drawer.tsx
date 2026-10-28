@@ -20,7 +20,12 @@ import BucketCartIcon from '@/components/bucket-cart-icon';
 import { WhatsAppIcon } from '@/components/social-icons';
 import { formatCurrency } from '@/lib/format';
 import { brandConfig } from '@/lib/brand';
-import { getWhatsAppOrderUrl, WhatsAppOrderDetails } from '@/lib/whatsapp';
+import {
+  getWhatsAppOrderUrl,
+  WhatsAppOrderDetails,
+  openWhatsAppDirectly,
+  buildWhatsAppOrderMessage,
+} from '@/lib/whatsapp';
 import { validatePromoCode } from '@/data/menu-data';
 
 export default function CartDrawer() {
@@ -151,7 +156,7 @@ export default function CartDrawer() {
         total,
       };
 
-      const waUrl = getWhatsAppOrderUrl(waDetails);
+      const waMessage = buildWhatsAppOrderMessage(waDetails);
 
       // Save recent order locally
       try {
@@ -164,8 +169,11 @@ export default function CartDrawer() {
       closeCartDrawer();
       setShowCheckoutModal(false);
 
-      // Open WhatsApp
-      window.location.href = waUrl;
+      // Open WhatsApp directly without intermediary landing page
+      openWhatsAppDirectly(brandConfig.whatsappCleanNumber, waMessage);
+      setTimeout(() => {
+        router.push('/order-success/confirmed');
+      }, 350);
     } catch (err: any) {
       setFormError(err.message || 'An error occurred while placing your order.');
       setSubmitting(false);

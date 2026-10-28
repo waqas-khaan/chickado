@@ -114,19 +114,7 @@ export function buildWhatsAppOrderMessage(order: WhatsAppOrderDetails): string {
   return lines.join('\n');
 }
 
-/**
- * Generate the complete wa.me URL for the order.
- */
-export function getWhatsAppOrderUrl(order: WhatsAppOrderDetails): string {
-  const message = buildWhatsAppOrderMessage(order);
-  const encoded = encodeURIComponent(message);
-  return `https://wa.me/${brandConfig.whatsappCleanNumber}?text=${encoded}`;
-}
-
-/**
- * Generate a single-item direct WhatsApp order URL without item pictures.
- */
-export function getSingleItemWhatsAppUrl(item: {
+export interface SingleItemOrderDetails {
   name: string;
   price: number;
   variantName?: string | null;
@@ -135,7 +123,12 @@ export function getSingleItemWhatsAppUrl(item: {
   totalPrice?: number;
   notes?: string | null;
   image?: string | null;
-}): string {
+}
+
+/**
+ * Builds text message for a single item order.
+ */
+export function buildSingleItemWhatsAppMessage(item: SingleItemOrderDetails): string {
   const lines: string[] = [
     `🍗 *${brandConfig.name}*`,
   ];
@@ -162,8 +155,91 @@ export function getSingleItemWhatsAppUrl(item: {
   lines.push('------------------');
   lines.push(`Hi ${brandConfig.name}! I would like to order this item. Please confirm availability and delivery time.`);
 
-  const message = lines.join('\n');
-  return `https://wa.me/${brandConfig.whatsappCleanNumber}?text=${encodeURIComponent(message)}`;
+  return lines.join('\n');
+}
+
+/**
+ * Detects if the current user agent is on a mobile device (Android, iOS, etc.)
+ */
+export function isMobileDevice(): boolean {
+  if (typeof window === 'undefined') return false;
+  const ua = navigator.userAgent || '';
+  const isTouchMac =
+    /Macintosh/i.test(ua) &&
+    typeof navigator.maxTouchPoints === 'number' &&
+    navigator.maxTouchPoints > 1;
+  return (
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua) ||
+    isTouchMac
+  );
+}
+
+/**
+ * Generate a direct WhatsApp URL that launches WhatsApp directly without
+ * loading the intermediate api.whatsapp.com / wa.me web page.
+ * - On Mobile: Uses native `whatsapp://send?phone=...&text=...` URI scheme
+ * - On Desktop: Uses `https://web.whatsapp.com/send?phone=...&text=...`
+ */
+export function buildDirectWhatsAppUrl(phone: string, text?: string): string {
+  const cleanPhone = phone.replace(/[^\d]/g, '');
+  const encodedText = text ? encodeURIComponent(text) : '';
+  const textQuery = encodedText ? `&text=${encodedText}` : '';
+
+  if (typeof window !== 'undefined') {
+    if (isMobileDevice()) {
+      return `whatsapp://send?phone=${cleanPhone}${textQuery}`;
+    }
+    return `https://web.whatsapp.com/send?phone=${cleanPhone}${textQuery}`;
+  }
+
+  // Fallback for SSR / static generation: default to mobile scheme for direct app opening
+  return `whatsapp://send?phone=${cleanPhone}${textQuery}`;
+}
+
+/**
+ * Programmatically opens WhatsApp directly without opening the intermediate web landing page.
+ * - On Mobile: triggers custom native app scheme `whatsapp://send` directly into the app
+ * - On Desktop: opens WhatsApp Web directly in a new tab
+ */
+export function openWhatsAppDirectly(phone: string, text?: string): void {
+  if (typeof window === 'undefined') return;
+
+  const cleanPhone = phone.replace(/[^\d]/g, '');
+  const encodedText = text ? encodeURIComponent(text) : '';
+  const textQuery = encodedText ? `&text=${encodedText}` : '';
+
+  if (isMobileDevice()) {
+    const mobileUrl = `whatsapp://send?phone=${cleanPhone}${textQuery}`;
+    try {
+      const link = document.createElement('a');
+      link.href = mobileUrl;
+      link.rel = 'noopener noreferrer';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch {
+      window.location.href = mobileUrl;
+    }
+  } else {
+    const desktopUrl = `https://web.whatsapp.com/send?phone=${cleanPhone}${textQuery}`;
+    window.open(desktopUrl, '_blank', 'noopener,noreferrer');
+  }
+}
+
+/**
+ * Generate the direct WhatsApp order URL.
+ */
+export function getWhatsAppOrderUrl(order: WhatsAppOrderDetails): string {
+  const message = buildWhatsAppOrderMessage(order);
+  return buildDirectWhatsAppUrl(brandConfig.whatsappCleanNumber, message);
+}
+
+/**
+ * Generate a single-item direct WhatsApp order URL without item pictures.
+ */
+export function getSingleItemWhatsAppUrl(item: SingleItemOrderDetails): string {
+  const message = buildSingleItemWhatsAppMessage(item);
+  return buildDirectWhatsAppUrl(brandConfig.whatsappCleanNumber, message);
 }
 
 /**
@@ -171,6 +247,5 @@ export function getSingleItemWhatsAppUrl(item: {
  */
 export function getWhatsAppChatUrl(customMessage?: string): string {
   const defaultMsg = `Hi ${brandConfig.name}, I would like to check your menu and place an order!`;
-  const encoded = encodeURIComponent(customMessage || defaultMsg);
-  return `https://wa.me/${brandConfig.whatsappCleanNumber}?text=${encoded}`;
+  return buildDirectWhatsAppUrl(brandConfig.whatsappCleanNumber, customMessage || defaultMsg);
 }

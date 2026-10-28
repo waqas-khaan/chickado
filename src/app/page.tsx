@@ -16,6 +16,7 @@ import HomeClientSection from './home-client-section';
 import PromoBanner from '@/components/promo-banner';
 import MobileAppBanner from '@/components/mobile-app-banner';
 import { WhatsAppIcon } from '@/components/social-icons';
+import WhatsAppDirectLink from '@/components/whatsapp-direct-link';
 
 export default function HomePage() {
   const categories = getAllCategories();
@@ -130,17 +131,14 @@ export default function HomePage() {
 
           {/* CTAs */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
-            <a
-              href={`https://wa.me/${brandConfig.whatsappCleanNumber}?text=${encodeURIComponent(
-                'Hi Chickado! I would like to order right now.'
-              )}`}
-              target="_blank"
-              rel="noopener noreferrer"
+            <WhatsAppDirectLink
+              phone={brandConfig.whatsappCleanNumber}
+              message="Hi Chickado! I would like to order right now."
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-2xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-600 text-white font-black text-sm uppercase tracking-wider shadow-xl shadow-emerald-600/30 hover:shadow-emerald-600/40 hover:scale-[1.02] active:scale-95 transition-all duration-200 border border-emerald-400/30 cursor-pointer"
             >
               <WhatsAppIcon className="w-5 h-5 fill-white" />
               <span>Chat on WhatsApp (+{brandConfig.whatsappCleanNumber})</span>
-            </a>
+            </WhatsAppDirectLink>
 
             <a
               href={`tel:${brandConfig.phone}`}

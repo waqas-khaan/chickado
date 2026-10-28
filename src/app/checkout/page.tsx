@@ -16,14 +16,19 @@ import {
   Check,
   ArrowLeft,
   AlertCircle,
-  CreditCard,
   Banknote,
+  CreditCard,
 } from 'lucide-react';
 import { useCartStore, OrderType } from '@/lib/cart-store';
 import { formatCurrency } from '@/lib/format';
 import { WhatsAppIcon } from '@/components/social-icons';
 import { brandConfig } from '@/lib/brand';
-import { getWhatsAppOrderUrl, WhatsAppOrderDetails } from '@/lib/whatsapp';
+import {
+  getWhatsAppOrderUrl,
+  WhatsAppOrderDetails,
+  openWhatsAppDirectly,
+  buildWhatsAppOrderMessage,
+} from '@/lib/whatsapp';
 import { validatePromoCode } from '@/data/menu-data';
 
 export default function CheckoutPage() {
@@ -138,7 +143,7 @@ export default function CheckoutPage() {
         total,
       };
 
-      const waUrl = getWhatsAppOrderUrl(waDetails);
+      const waMessage = buildWhatsAppOrderMessage(waDetails);
 
       try {
         const recentOrders = JSON.parse(localStorage.getItem('chickado_recent_orders') || '[]');
@@ -147,7 +152,10 @@ export default function CheckoutPage() {
       } catch {}
 
       clearCart();
-      window.location.href = waUrl;
+      openWhatsAppDirectly(brandConfig.whatsappCleanNumber, waMessage);
+      setTimeout(() => {
+        router.push('/order-success/confirmed');
+      }, 350);
     } catch (err: any) {
       setError(err.message || 'Something went wrong processing your order');
     } finally {

@@ -7,7 +7,12 @@ import { X, Plus, Minus, Check, Flame, ShoppingBag } from 'lucide-react';
 import { formatCurrency } from '@/lib/format';
 import { useCartStore } from '@/lib/cart-store';
 import { WhatsAppIcon } from '@/components/social-icons';
-import { getSingleItemWhatsAppUrl } from '@/lib/whatsapp';
+import { brandConfig } from '@/lib/brand';
+import {
+  getSingleItemWhatsAppUrl,
+  openWhatsAppDirectly,
+  buildSingleItemWhatsAppMessage,
+} from '@/lib/whatsapp';
 
 export interface ItemModalProps {
   item: {
@@ -138,7 +143,7 @@ export default function ItemModal({ item, isOpen, onClose }: ItemModalProps) {
 
   const handleOrderOnWhatsApp = () => {
     if (!item) return;
-    const waUrl = getSingleItemWhatsAppUrl({
+    const message = buildSingleItemWhatsAppMessage({
       name: item.name,
       price: unitPrice,
       variantName: selectedVariant,
@@ -148,7 +153,8 @@ export default function ItemModal({ item, isOpen, onClose }: ItemModalProps) {
       notes: notes.trim() || undefined,
       image: item.image,
     });
-    window.open(waUrl, '_blank');
+    openWhatsAppDirectly(brandConfig.whatsappCleanNumber, message);
+    onClose();
   };
 
   return createPortal(

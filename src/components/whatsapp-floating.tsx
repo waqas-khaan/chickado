@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { WhatsAppIcon } from '@/components/social-icons';
-import { getWhatsAppChatUrl } from '@/lib/whatsapp';
+import { getWhatsAppChatUrl, openWhatsAppDirectly } from '@/lib/whatsapp';
+import { brandConfig } from '@/lib/brand';
 import { useCartStore } from '@/lib/cart-store';
 
 export default function FloatingWhatsAppButton() {
@@ -41,10 +42,12 @@ export default function FloatingWhatsAppButton() {
     >
       <a
         href={chatUrl}
-        target="_blank"
-        rel="noopener noreferrer"
         aria-label="Order or Chat on WhatsApp"
-        className="relative flex items-center justify-center w-14 h-14 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all duration-300 ring-4 ring-emerald-500/20"
+        onClick={(e) => {
+          e.preventDefault();
+          openWhatsAppDirectly(brandConfig.whatsappCleanNumber);
+        }}
+        className="relative flex items-center justify-center w-14 h-14 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all duration-300 ring-4 ring-emerald-500/20 cursor-pointer"
       >
         {/* Pulsing beacon effect */}
         <span className="absolute -top-1 -right-1 flex h-4 w-4">

@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { brandConfig } from '@/lib/brand';
 import { WhatsAppIcon } from '@/components/social-icons';
+import WhatsAppDirectLink from '@/components/whatsapp-direct-link';
 
 interface OrderSuccessProps {
   params: Promise<{ orderNumber: string }>;
@@ -45,17 +46,14 @@ export default async function OrderSuccessPage({ params }: OrderSuccessProps) {
 
           {/* Action Buttons */}
           <div className="pt-4 flex flex-col sm:flex-row gap-3 justify-center">
-            <a
-              href={`https://wa.me/${brandConfig.whatsappCleanNumber}?text=${encodeURIComponent(
-                `Hi ${brandConfig.name}! I just submitted an order. Please confirm my order details.`
-              )}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-whatsapp inline-flex items-center justify-center gap-2 px-6 py-3.5 text-xs font-black shadow-md"
+            <WhatsAppDirectLink
+              phone={brandConfig.whatsappCleanNumber}
+              message={`Hi ${brandConfig.name}! I just submitted an order. Please confirm my order details.`}
+              className="btn-whatsapp inline-flex items-center justify-center gap-2 px-6 py-3.5 text-xs font-black shadow-md cursor-pointer"
             >
               <WhatsAppIcon className="w-4 h-4" />
               <span>Open WhatsApp Chat</span>
-            </a>
+            </WhatsAppDirectLink>
 
             <Link
               href="/menu"

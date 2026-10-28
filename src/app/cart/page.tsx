@@ -20,7 +20,12 @@ import BucketCartIcon from '@/components/bucket-cart-icon';
 import { WhatsAppIcon } from '@/components/social-icons';
 import { formatCurrency } from '@/lib/format';
 import { brandConfig } from '@/lib/brand';
-import { getWhatsAppOrderUrl, WhatsAppOrderDetails } from '@/lib/whatsapp';
+import {
+  getWhatsAppOrderUrl,
+  WhatsAppOrderDetails,
+  openWhatsAppDirectly,
+  buildWhatsAppOrderMessage,
+} from '@/lib/whatsapp';
 
 export default function CartPage() {
   const router = useRouter();
@@ -255,9 +260,15 @@ export default function CartPage() {
 
               <a
                 href={whatsappUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full btn-whatsapp py-3.5 text-xs flex items-center justify-center gap-2"
+                onClick={(e) => {
+                  e.preventDefault();
+                  openWhatsAppDirectly(brandConfig.whatsappCleanNumber, buildWhatsAppOrderMessage(waDetails));
+                  clearCart();
+                  setTimeout(() => {
+                    router.push('/order-success/confirmed');
+                  }, 350);
+                }}
+                className="w-full btn-whatsapp py-3.5 text-xs flex items-center justify-center gap-2 cursor-pointer"
               >
                 <WhatsAppIcon className="w-4 h-4" />
                 <span>Order Cart on WhatsApp</span>

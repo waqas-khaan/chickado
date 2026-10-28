@@ -12,6 +12,7 @@ import {
 import { InstagramIcon, TikTokIcon, YouTubeIcon, FacebookIcon } from '@/components/social-icons';
 import { Metadata } from 'next';
 import { brandConfig } from '@/lib/brand';
+import WhatsAppDirectLink from '@/components/whatsapp-direct-link';
 
 export const metadata: Metadata = {
   title: `Contact & Location | ${brandConfig.name} Peshawar Saddar`,
@@ -69,14 +70,12 @@ export default function ContactPage() {
               </div>
               <div className="flex items-center gap-2">
                 <span className="font-bold text-neutral-500">WhatsApp:</span>
-                <a
-                  href={`https://wa.me/${brandConfig.whatsappCleanNumber}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-black text-emerald-700 hover:underline"
+                <WhatsAppDirectLink
+                  phone={brandConfig.whatsappCleanNumber}
+                  className="font-black text-emerald-700 hover:underline cursor-pointer"
                 >
                   +{brandConfig.whatsappCleanNumber}
-                </a>
+                </WhatsAppDirectLink>
               </div>
               <div className="flex items-center gap-2">
                 <span className="font-bold text-neutral-500">Email:</span>

@@ -7,6 +7,7 @@ import { usePathname } from 'next/navigation';
 import { MapPin, Phone, Clock, MessageSquare, Navigation } from 'lucide-react';
 import { InstagramIcon, TikTokIcon, YouTubeIcon, FacebookIcon, WhatsAppIcon } from '@/components/social-icons';
 import { brandConfig } from '@/lib/brand';
+import { openWhatsAppDirectly, getWhatsAppChatUrl } from '@/lib/whatsapp';
 
 export default function Footer() {
   const pathname = usePathname();
@@ -129,10 +130,12 @@ export default function Footer() {
               <p className="flex items-center gap-2">
                 <WhatsAppIcon className="w-4 h-4 text-emerald-600" />
                 <a
-                  href={`https://wa.me/${brandConfig.whatsappCleanNumber}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-emerald-700 transition font-bold text-emerald-600"
+                  href={getWhatsAppChatUrl()}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    openWhatsAppDirectly(brandConfig.whatsappCleanNumber);
+                  }}
+                  className="hover:text-emerald-700 transition font-bold text-emerald-600 cursor-pointer"
                 >
                   WhatsApp: +{brandConfig.whatsappCleanNumber}
                 </a>

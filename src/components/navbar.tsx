@@ -9,6 +9,7 @@ import BucketCartIcon from '@/components/bucket-cart-icon';
 import { brandConfig } from '@/lib/brand';
 import { useCartStore } from '@/lib/cart-store';
 import { formatCurrency } from '@/lib/format';
+import { openWhatsAppDirectly, getWhatsAppChatUrl } from '@/lib/whatsapp';
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -223,11 +224,13 @@ export default function Navbar() {
                 <span>Call Store: {brandConfig.phone}</span>
               </a>
               <a
-                href={`https://wa.me/${brandConfig.whatsappCleanNumber}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center justify-center gap-1.5 py-2 text-xs font-bold text-emerald-600 bg-emerald-50 rounded-xl hover:bg-emerald-100 transition"
+                href={getWhatsAppChatUrl()}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setMobileMenuOpen(false);
+                  openWhatsAppDirectly(brandConfig.whatsappCleanNumber);
+                }}
+                className="flex items-center justify-center gap-1.5 py-2 text-xs font-bold text-emerald-600 bg-emerald-50 rounded-xl hover:bg-emerald-100 transition cursor-pointer"
               >
                 <MessageCircle className="w-3.5 h-3.5 text-emerald-600" />
                 <span>Chat on WhatsApp</span>
