@@ -94,7 +94,7 @@ export function buildWhatsAppOrderMessage(order: WhatsAppOrderDetails): string {
   lines.push(`Subtotal: ${formatCurrency(order.subtotal)}`);
 
   if (order.orderType === 'DELIVERY') {
-    lines.push(`Delivery: ${formatCurrency(order.deliveryFee)}`);
+    lines.push(`Delivery: ${order.deliveryFee > 0 ? formatCurrency(order.deliveryFee) : 'Free Delivery'}`);
   }
 
   if (order.discount > 0) {

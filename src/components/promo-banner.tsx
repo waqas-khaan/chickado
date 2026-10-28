@@ -31,24 +31,24 @@ const BANNERS: BannerSlide[] = [
   {
     id: 'baked-pasta',
     title: 'Baked Pasta - Hot • Cheesy • Loaded',
-    description: 'Small Rs 400 (+Tax) • Large Rs 700 (+Tax)',
+    description: 'Small Rs 400 • Large Rs 700',
     imagePng: '/assets/banners/baked-pasta-banner-hq.png',
     imageWebpSrcSet:
       '/assets/banners/baked-pasta-banner-mobile.webp 800w, /assets/banners/baked-pasta-banner-md.webp 1400w, /assets/banners/baked-pasta-banner-hq.webp 2048w, /assets/banners/baked-pasta-banner-4k.webp 2560w',
-    alt: 'Chickado Baked Pasta - Hot, Cheesy, Loaded. Small Rs 400 +Tax, Large Rs 700 +Tax.',
+    alt: 'Chickado Baked Pasta - Hot, Cheesy, Loaded. Small Rs 400, Large Rs 700.',
     whatsappMessage:
       'Hi Chickado! I would like to order the Baked Pasta (Hot • Cheesy • Loaded) - Small (Rs 400) / Large (Rs 700).',
   },
   {
     id: 'crunch-box',
     title: 'Crunch Box - Hot • Crispy • Delicious',
-    description: '1 Chicken Broast Pcs, 1 Crunch Burger, 1 Reg Drink - Rs 650 (+Tax)',
+    description: '1 Chicken Broast Pcs, 1 Crunch Burger, 1 Reg Drink - Rs 650',
     imagePng: '/assets/banners/crunch-box-banner-hq.png',
     imageWebpSrcSet:
       '/assets/banners/crunch-box-banner-mobile.webp 800w, /assets/banners/crunch-box-banner-md.webp 1400w, /assets/banners/crunch-box-banner-hq.webp 2048w, /assets/banners/crunch-box-banner-4k.webp 2560w',
-    alt: 'Chickado Crunch Box - Hot, Crispy, Delicious. 1 Chicken Broast Pcs, 1 Crunch Burger, 1 Reg Drink. RS 650 (+Tax).',
+    alt: 'Chickado Crunch Box - Hot, Crispy, Delicious. 1 Chicken Broast Pcs, 1 Crunch Burger, 1 Reg Drink. RS 650.',
     whatsappMessage:
-      'Hi Chickado! I would like to order the Crunch Box Deal (1 Chicken Broast Pcs, 1 Crunch Burger, 1 Reg Drink) - Rs 650 (+Tax).',
+      'Hi Chickado! I would like to order the Crunch Box Deal (1 Chicken Broast Pcs, 1 Crunch Burger, 1 Reg Drink) - Rs 650.',
   },
 ];
 

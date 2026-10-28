@@ -15,8 +15,8 @@ export const brandConfig = {
   whatsappCleanNumber: '923316633141',
   currency: 'Rs',
   currencyCode: 'PKR',
-  deliveryFee: 150,
-  taxRate: 0.05, // 5% default
+  deliveryFee: 0,
+  taxRate: 0,
   address: 'opposite to Sunhri Masjid near to MCB bank peshawar saddar, Peshawar, Pakistan',
   openingHours: '11:00 AM - 02:00 AM Daily',
   

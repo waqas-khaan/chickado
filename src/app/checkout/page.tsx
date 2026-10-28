@@ -234,21 +234,6 @@ export default function CheckoutPage() {
                   </button>
                 ))}
               </div>
-
-              {orderType === 'DINE_IN' && (
-                <div className="pt-2">
-                  <label className="block text-xs font-bold text-neutral-700 mb-1">
-                    Table Number
-                  </label>
-                  <input
-                    type="text"
-                    value={tableNumber || ''}
-                    onChange={(e) => setTableNumber(e.target.value)}
-                    placeholder="e.g. Table 4"
-                    className="w-full glass-input text-xs px-3.5 py-2.5"
-                  />
-                </div>
-              )}
             </div>
 
             {/* 2. Customer Contact & Location */}
@@ -440,7 +425,7 @@ export default function CheckoutPage() {
                   <div className="flex gap-2">
                     <input
                       type="text"
-                      placeholder="e.g. CHICK100"
+                      placeholder="Promo Code"
                       value={promoInput}
                       onChange={(e) => setPromoInput(e.target.value.toUpperCase())}
                       className="flex-1 glass-input text-xs px-3.5 py-2 uppercase"
@@ -469,19 +454,13 @@ export default function CheckoutPage() {
                 {orderType === 'DELIVERY' && (
                   <div className="flex justify-between">
                     <span>Delivery Fee:</span>
-                    <span className="font-bold text-neutral-900">{formatCurrency(deliveryFee)}</span>
+                    <span className="font-bold text-emerald-600">Free Delivery</span>
                   </div>
                 )}
                 {discount > 0 && (
                   <div className="flex justify-between text-emerald-600 font-bold">
                     <span>Discount:</span>
                     <span>-{formatCurrency(discount)}</span>
-                  </div>
-                )}
-                {tax > 0 && (
-                  <div className="flex justify-between">
-                    <span>Tax:</span>
-                    <span className="font-bold text-neutral-900">{formatCurrency(tax)}</span>
                   </div>
                 )}
                 <div className="flex justify-between text-base font-black text-neutral-900 pt-3 border-t border-neutral-200/60">

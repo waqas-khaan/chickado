@@ -216,17 +216,17 @@ export default function CartDrawer() {
         {/* Slide-out Glass Drawer */}
         <aside className="absolute inset-y-0 right-0 max-w-full flex pl-10">
           <div className="w-screen max-w-md glass-drawer flex flex-col relative z-10 animate-slideLeft">
-            {/* Drawer Header */}
-            <div className="p-5 border-b border-white/60 flex items-center justify-between">
+            {/* Drawer Header (Navbar) */}
+            <div className="p-4 sm:p-5 bg-gradient-to-r from-red-600 via-red-600 to-red-700 text-white shadow-md border-b border-red-700/50 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="shrink-0">
-                  <BucketCartIcon count={itemCount} size={36} />
+                <div className="shrink-0 w-11 h-11 rounded-2xl bg-white shadow-sm flex items-center justify-center p-1 border border-white/60">
+                  <BucketCartIcon count={itemCount} size={30} />
                 </div>
                 <div>
-                  <h2 className="font-heading text-lg font-black text-neutral-900 leading-tight">
+                  <h2 className="font-heading text-lg font-black text-white leading-tight drop-shadow-xs">
                     Your Chickado Cart
                   </h2>
-                  <span className="text-xs text-neutral-500">
+                  <span className="text-xs text-red-100 font-medium">
                     {itemCount} {itemCount === 1 ? 'item' : 'items'} ready for crunch
                   </span>
                 </div>
@@ -235,9 +235,9 @@ export default function CartDrawer() {
               <button
                 onClick={closeCartDrawer}
                 aria-label="Close cart"
-                className="p-2 rounded-xl text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100/80 transition"
+                className="w-9 h-9 rounded-xl bg-white/15 hover:bg-white/25 active:scale-95 text-white flex items-center justify-center transition border border-white/20 shadow-xs"
               >
-                <X className="w-5 h-5" />
+                <X className="w-5 h-5 stroke-[2.5]" />
               </button>
             </div>
 
@@ -286,18 +286,6 @@ export default function CartDrawer() {
                       );
                     })}
                   </div>
-
-                  {orderType === 'DINE_IN' && (
-                    <div className="mt-3">
-                      <input
-                        type="text"
-                        placeholder="Table Number (e.g. T-3)"
-                        value={tableNumber}
-                        onChange={(e) => setTableNumber(e.target.value)}
-                        className="w-full text-xs font-semibold px-3 py-2 glass-input"
-                      />
-                    </div>
-                  )}
                 </div>
 
                 {/* Items List */}
@@ -328,10 +316,10 @@ export default function CartDrawer() {
                             </h4>
                             <button
                               onClick={() => removeItem(item.cartItemId)}
-                              className="text-neutral-400 hover:text-red-600 transition"
+                              className="text-red-600 hover:text-red-700 hover:bg-red-50 p-1 rounded-lg transition"
                               aria-label={`Remove ${item.name}`}
                             >
-                              <Trash2 className="w-3.5 h-3.5" />
+                              <Trash2 className="w-3.5 h-3.5 text-red-600" />
                             </button>
                           </div>
 
@@ -394,7 +382,7 @@ export default function CartDrawer() {
                         <Tag className="w-4 h-4 absolute left-3 top-2.5 text-neutral-400" />
                         <input
                           type="text"
-                          placeholder="Promo Code (e.g. CHICK100)"
+                          placeholder="Promo Code"
                           value={promoInput}
                           onChange={(e) => setPromoInput(e.target.value.toUpperCase())}
                           className="w-full pl-9 pr-3 py-2 text-xs uppercase font-bold glass-input"
@@ -440,19 +428,13 @@ export default function CartDrawer() {
                     {orderType === 'DELIVERY' && (
                       <div className="flex justify-between">
                         <span>Delivery Fee:</span>
-                        <span className="font-semibold text-neutral-900">{formatCurrency(deliveryFee)}</span>
+                        <span className="font-bold text-emerald-600">Free Delivery</span>
                       </div>
                     )}
                     {discount > 0 && (
                       <div className="flex justify-between text-emerald-600 font-semibold">
                         <span>Discount:</span>
                         <span>-{formatCurrency(discount)}</span>
-                      </div>
-                    )}
-                    {tax > 0 && (
-                      <div className="flex justify-between">
-                        <span>Sales Tax (5%):</span>
-                        <span className="font-semibold text-neutral-900">{formatCurrency(tax)}</span>
                       </div>
                     )}
                     <div className="flex justify-between text-base font-black text-neutral-900 pt-2 border-t border-neutral-200/80">
@@ -569,6 +551,12 @@ export default function CartDrawer() {
                   <span>Items Count:</span>
                   <span className="font-bold text-neutral-900">{itemCount} items</span>
                 </div>
+                {orderType === 'DELIVERY' && (
+                  <div className="flex justify-between">
+                    <span>Delivery:</span>
+                    <span className="font-bold text-emerald-600">Free Delivery</span>
+                  </div>
+                )}
                 <div className="flex justify-between font-bold text-neutral-900 text-xs pt-1 border-t border-neutral-200/60">
                   <span>Payable Total:</span>
                   <span className="font-black text-red-600">{formatCurrency(total)}</span>

@@ -149,9 +149,7 @@ export const useCartStore = create<CartStore>()(
       },
 
       getDeliveryFee: () => {
-        return get().orderType === 'DELIVERY' && get().items.length > 0
-          ? brandConfig.deliveryFee
-          : 0;
+        return 0;
       },
 
       getDiscount: () => {
@@ -165,10 +163,7 @@ export const useCartStore = create<CartStore>()(
       },
 
       getTax: () => {
-        const subtotal = get().getSubtotal();
-        const discount = get().getDiscount();
-        const taxable = Math.max(0, subtotal - discount);
-        return Math.round(taxable * brandConfig.taxRate);
+        return 0;
       },
 
       getTotal: () => {

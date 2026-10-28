@@ -204,10 +204,10 @@ export default function CartPage() {
 
                   <button
                     onClick={() => removeItem(item.cartItemId)}
-                    className="p-2 text-neutral-400 hover:text-red-600 hover:scale-105 active:scale-95 transition"
+                    className="p-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg hover:scale-105 active:scale-95 transition"
                     aria-label="Remove item"
                   >
-                    <Trash2 className="w-4 h-4" />
+                    <Trash2 className="w-4 h-4 text-red-600" />
                   </button>
                 </div>
               ))}
@@ -228,19 +228,13 @@ export default function CartPage() {
               {orderType === 'DELIVERY' && (
                 <div className="flex justify-between">
                   <span>Delivery Fee:</span>
-                  <span className="font-bold text-neutral-900">{formatCurrency(deliveryFee)}</span>
+                  <span className="font-bold text-emerald-600">Free Delivery</span>
                 </div>
               )}
               {discount > 0 && (
                 <div className="flex justify-between text-emerald-600 font-bold">
                   <span>Discount:</span>
                   <span>-{formatCurrency(discount)}</span>
-                </div>
-              )}
-              {tax > 0 && (
-                <div className="flex justify-between">
-                  <span>Tax:</span>
-                  <span className="font-bold text-neutral-900">{formatCurrency(tax)}</span>
                 </div>
               )}
               <div className="flex justify-between text-base font-black text-neutral-900 pt-3 border-t border-neutral-200/60">
