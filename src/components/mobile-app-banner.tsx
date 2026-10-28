@@ -253,8 +253,8 @@ export default function MobileAppBanner() {
             <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3 pt-2">
               {/* Google Play Button — downloads Android APK */}
               <a
-                href="/android/app-debug.apk"
-                download="app-debug.apk"
+                href="/android/chickado.apk"
+                download="chickado.apk"
                 className="bg-neutral-950 hover:bg-black text-white px-4 sm:px-5 py-2.5 rounded-xl flex items-center gap-3 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-200 border border-white/20 cursor-pointer"
                 aria-label="Download Android app"
               >
