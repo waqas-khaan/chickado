@@ -419,7 +419,7 @@ export default function CartDrawer() {
                 </div>
 
                 {/* Totals & Checkout Actions in Glass Card */}
-                <div className="p-5 glass-card m-3 border border-white/80 shadow-lg space-y-3">
+                <div className="p-5 glass-card m-3 border border-black shadow-lg space-y-3">
                   <div className="space-y-1.5 text-xs text-neutral-600">
                     <div className="flex justify-between">
                       <span>Subtotal:</span>
