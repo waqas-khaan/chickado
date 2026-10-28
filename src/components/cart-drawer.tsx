@@ -418,8 +418,11 @@ export default function CartDrawer() {
                   </div>
                 </div>
 
-                {/* Totals & Checkout Actions in Glass Card */}
-                <div className="p-5 glass-card m-3 border border-black shadow-lg space-y-3">
+                {/* Totals & Checkout Actions in Card */}
+                <div
+                  className="p-5 m-3 shadow-lg space-y-3 rounded-2xl bg-white/95 backdrop-blur-md"
+                  style={{ border: '1.5px solid #000000' }}
+                >
                   <div className="space-y-1.5 text-xs text-neutral-600">
                     <div className="flex justify-between">
                       <span>Subtotal:</span>
