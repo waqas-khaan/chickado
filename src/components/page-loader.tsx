@@ -13,14 +13,25 @@ export default function PageLoader() {
     setMounted(true);
 
     // If already shown during this session, dismiss immediately
-    if (typeof window !== 'undefined' && sessionStorage.getItem('chickado_splash_done')) {
+    let alreadyShown = false;
+    try {
+      if (typeof window !== 'undefined' && sessionStorage.getItem('chickado_splash_done')) {
+        alreadyShown = true;
+      }
+    } catch {
+      alreadyShown = false;
+    }
+
+    if (alreadyShown) {
       setLoading(false);
       return;
     }
 
-    if (typeof window !== 'undefined') {
-      sessionStorage.setItem('chickado_splash_done', 'true');
-    }
+    try {
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('chickado_splash_done', 'true');
+      }
+    } catch {}
 
     // Lock body scroll while loader is visible
     document.body.style.overflow = 'hidden';
@@ -40,11 +51,18 @@ export default function PageLoader() {
       document.body.style.overflow = '';
     }, 550);
 
+    // Hard fallback safety timer (iOS Safari / mobile performance)
+    const safetyTimer = setTimeout(() => {
+      setLoading(false);
+      document.body.style.overflow = '';
+    }, 800);
+
     return () => {
       clearTimeout(p1);
       clearTimeout(p2);
       clearTimeout(exitTimer);
       clearTimeout(doneTimer);
+      clearTimeout(safetyTimer);
       document.body.style.overflow = '';
     };
   }, []);

@@ -159,43 +159,65 @@ export function buildSingleItemWhatsAppMessage(item: SingleItemOrderDetails): st
 }
 
 /**
+ * Detects if the current user agent is on an iOS device (iPhone, iPad, iPod)
+ */
+export function isIOS(): boolean {
+  if (typeof window === 'undefined') return false;
+  const ua = navigator.userAgent || '';
+  const isApple = /iPhone|iPad|iPod/i.test(ua);
+  const isAppleTouchMac =
+    /Macintosh/i.test(ua) &&
+    typeof navigator.maxTouchPoints === 'number' &&
+    navigator.maxTouchPoints > 1;
+  return isApple || isAppleTouchMac;
+}
+
+/**
  * Detects if the current user agent is on a mobile device (Android, iOS, etc.)
  */
 export function isMobileDevice(): boolean {
   if (typeof window === 'undefined') return false;
   const ua = navigator.userAgent || '';
-  const isTouchMac =
-    /Macintosh/i.test(ua) &&
-    typeof navigator.maxTouchPoints === 'number' &&
-    navigator.maxTouchPoints > 1;
-  return (
-    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua) ||
-    isTouchMac
-  );
+  return isIOS() || /Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(ua);
 }
 
 /**
- * Generate a direct WhatsApp URL that launches WhatsApp directly in the
- * native application (mobile or desktop app) without opening any intermediate
- * web pages or WhatsApp Web (web.whatsapp.com / wa.me / api.whatsapp.com).
- * Uses native `whatsapp://send?phone=...&text=...` URI scheme.
+ * Generate a direct WhatsApp URL optimized for the user's specific platform:
+ * - On iOS (iPhone / iPad in Safari, Chrome, etc.): Uses Apple Universal Link
+ *   `https://api.whatsapp.com/send?phone=...&text=...` which iOS natively intercepts
+ *   to launch the WhatsApp app without "Safari cannot open page because address is invalid" errors.
+ * - On Android & Desktop: Uses `whatsapp://send?phone=...&text=...` to launch the app directly.
  */
 export function buildDirectWhatsAppUrl(phone: string, text?: string): string {
   const cleanPhone = phone.replace(/[^\d]/g, '');
   const encodedText = text ? encodeURIComponent(text) : '';
   const textQuery = encodedText ? `&text=${encodedText}` : '';
+
+  if (typeof window !== 'undefined' && isIOS()) {
+    return `https://api.whatsapp.com/send?phone=${cleanPhone}${textQuery}`;
+  }
+
   return `whatsapp://send?phone=${cleanPhone}${textQuery}`;
 }
 
 /**
- * Programmatically opens WhatsApp directly in the native application (mobile or desktop)
- * without opening any intermediate web landing page or WhatsApp Web.
+ * Programmatically opens WhatsApp directly in the native application
+ * without opening intermediate web landing pages or causing browser error dialogs.
  */
 export function openWhatsAppDirectly(phone: string, text?: string): void {
   if (typeof window === 'undefined') return;
 
-  const appUrl = buildDirectWhatsAppUrl(phone, text);
+  const cleanPhone = phone.replace(/[^\d]/g, '');
+  const encodedText = text ? encodeURIComponent(text) : '';
+  const textQuery = encodedText ? `&text=${encodedText}` : '';
 
+  if (isIOS()) {
+    // On iOS (Safari & Chrome on iPhone), Universal Links must be triggered via window.location
+    window.location.href = `https://api.whatsapp.com/send?phone=${cleanPhone}${textQuery}`;
+    return;
+  }
+
+  const appUrl = `whatsapp://send?phone=${cleanPhone}${textQuery}`;
   try {
     const link = document.createElement('a');
     link.href = appUrl;

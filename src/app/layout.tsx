@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import Navbar from '@/components/navbar';
 import TopAnnouncementBar from '@/components/top-announcement-bar';
@@ -8,6 +8,14 @@ import FloatingWhatsAppButton from '@/components/whatsapp-floating';
 import MenuBookModal from '@/components/menu-book-modal';
 import PageLoader from '@/components/page-loader';
 import { brandConfig } from '@/lib/brand';
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: '#DC2626',
+  viewportFit: 'cover',
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(brandConfig.appUrl),
@@ -46,7 +54,7 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body suppressHydrationWarning className="min-h-full flex flex-col bg-[#FAFAFA] text-neutral-900 selection:bg-red-600 selection:text-white relative overflow-x-hidden font-sans">
+      <body suppressHydrationWarning className="min-h-full flex flex-col bg-[#FAFAFA] text-neutral-900 selection:bg-red-600 selection:text-white relative font-sans">
         {/* Soft Ambient Blurred Red/Amber Blobs for Glass UI Depth */}
         <div className="fixed -top-40 -left-40 w-[34rem] h-[34rem] bg-red-500/10 rounded-full blur-[100px] pointer-events-none -z-10" />
         <div className="fixed top-1/3 -right-40 w-[30rem] h-[30rem] bg-amber-500/10 rounded-full blur-[100px] pointer-events-none -z-10" />
@@ -55,7 +63,7 @@ export default function RootLayout({
         <PageLoader />
         <TopAnnouncementBar />
         <Navbar />
-        <main className="flex-1 relative z-10">{children}</main>
+        <main className="flex-1 relative z-10 overflow-x-clip">{children}</main>
         <Footer />
         <CartDrawer />
         <FloatingWhatsAppButton />
