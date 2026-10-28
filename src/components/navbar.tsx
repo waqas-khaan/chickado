@@ -150,35 +150,23 @@ export default function Navbar() {
             </a>
           </nav>
 
-          {/* Action CTAs: Menu Book (Mobile), Bucket Cart Button, Mobile Hamburger */}
-          <div className="flex items-center gap-1.5 sm:gap-2.5 md:gap-3">
-            {/* Mobile Menu Book PDF Button (Directly visible on mobile top bar) */}
-            <a
-              href="/menu-book/chickado-menu.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="lg:hidden flex items-center gap-1 px-2.5 py-1.5 rounded-full text-[11px] sm:text-xs font-heading font-black tracking-wider transition bg-gradient-to-r from-red-600 via-amber-600 to-red-600 text-white shadow-sm hover:shadow-red-600/30 hover:scale-105 active:scale-95 border border-amber-400/30 cursor-pointer whitespace-nowrap flex-shrink-0"
-              title="Open Official Chickado Menu PDF"
-            >
-              <BookOpen className="w-3.5 h-3.5" />
-              <span>MENU BOOK</span>
-            </a>
-
+          {/* Action CTAs: Bucket Cart Button, Mobile Hamburger */}
+          <div className="flex items-center gap-2.5 sm:gap-3">
             {/* Fast-Food Chicken Bucket Cart Trigger */}
             <button
               id="navbar-cart-button"
               onClick={openCartDrawer}
               aria-label="View Shopping Cart"
-              className="relative flex items-center gap-1.5 sm:gap-2.5 px-2.5 sm:px-3.5 py-1.5 sm:py-2.5 rounded-2xl hover:bg-neutral-100/70 transition-all duration-200 active:scale-95 group cursor-pointer flex-shrink-0"
+              className="relative flex items-center gap-2.5 sm:gap-3 px-3.5 py-2 sm:py-2.5 rounded-2xl hover:bg-neutral-100/70 transition-all duration-200 active:scale-95 group cursor-pointer"
             >
               <div className={cartBouncing ? 'animate-cart-bounce' : ''}>
-                <BucketCartIcon count={displayedCount} size={38} />
+                <BucketCartIcon count={displayedCount} size={42} />
               </div>
-              <div className="flex flex-col text-left pr-0.5 sm:pr-1">
-                <span className="text-[10px] sm:text-[11px] uppercase font-black tracking-wider text-neutral-400 leading-none">
+              <div className="flex flex-col text-left pr-1">
+                <span className="text-[11px] uppercase font-black tracking-wider text-neutral-400 leading-none">
                   Cart
                 </span>
-                <span suppressHydrationWarning className="text-xs sm:text-[15px] font-black text-red-600 font-heading leading-tight mt-0.5">
+                <span suppressHydrationWarning className="text-sm sm:text-[15px] font-black text-red-600 font-heading leading-tight mt-0.5">
                   {formatCurrency(displayedSubtotal)}
                 </span>
               </div>
