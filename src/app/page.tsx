@@ -118,8 +118,8 @@ export default function HomePage() {
 
           {/* Headline */}
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-neutral-900 tracking-tight uppercase font-heading leading-tight">
-            Craving Right Now?{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-amber-600">
+            <span>Craving Right Now?</span>
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-amber-600 mt-1">
               Skip The Wait!
             </span>
           </h2>
