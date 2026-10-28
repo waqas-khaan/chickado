@@ -67,6 +67,30 @@ export default function CartDrawer() {
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState('');
 
+  const resetCheckoutModal = () => {
+    setSubmitting(false);
+    setShowCheckoutModal(false);
+    setFormError('');
+    setCustomerName('');
+    setCustomerPhone('');
+    setCustomerAddress('');
+    setOrderNotes('');
+  };
+
+  React.useEffect(() => {
+    const handleRestoreState = () => {
+      if (submitting) {
+        resetCheckoutModal();
+      }
+    };
+    window.addEventListener('pageshow', handleRestoreState);
+    window.addEventListener('focus', handleRestoreState);
+    return () => {
+      window.removeEventListener('pageshow', handleRestoreState);
+      window.removeEventListener('focus', handleRestoreState);
+    };
+  }, [submitting]);
+
   if (!isCartDrawerOpen) return null;
 
   const subtotal = getSubtotal();
@@ -165,15 +189,15 @@ export default function CartDrawer() {
         localStorage.setItem('chickado_recent_orders', JSON.stringify(recentOrders.slice(0, 10)));
       } catch {}
 
+      // Reset checkout modal and clear cart immediately so when the browser regains focus,
+      // all dialogs and the cart are completely fresh and clean
+      resetCheckoutModal();
       clearCart();
       closeCartDrawer();
-      setShowCheckoutModal(false);
 
       // Open WhatsApp directly without intermediary landing page
       openWhatsAppDirectly(brandConfig.whatsappCleanNumber, waMessage);
-      setTimeout(() => {
-        router.push('/order-success/confirmed');
-      }, 350);
+      router.push('/order-success/confirmed');
     } catch (err: any) {
       setFormError(err.message || 'An error occurred while placing your order.');
       setSubmitting(false);
@@ -457,7 +481,12 @@ export default function CartDrawer() {
 
       {/* Quick Customer Details Modal (Glass Style) */}
       {showCheckoutModal && (
-        <div className="fixed inset-0 z-60 bg-neutral-950/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div
+          className="fixed inset-0 z-60 bg-neutral-950/60 backdrop-blur-sm flex items-center justify-center p-4"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) resetCheckoutModal();
+          }}
+        >
           <div className="glass-modal max-w-md w-full p-6 shadow-2xl animate-scaleUp border border-white/70">
             <div className="flex items-center justify-between border-b border-neutral-200/70 pb-3 mb-4">
               <div className="flex items-center gap-2">
@@ -466,8 +495,9 @@ export default function CartDrawer() {
                 </span>
               </div>
               <button
-                onClick={() => setShowCheckoutModal(false)}
-                className="text-neutral-400 hover:text-neutral-700"
+                type="button"
+                onClick={resetCheckoutModal}
+                className="text-neutral-400 hover:text-neutral-700 cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>

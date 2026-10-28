@@ -153,9 +153,7 @@ export default function CheckoutPage() {
 
       clearCart();
       openWhatsAppDirectly(brandConfig.whatsappCleanNumber, waMessage);
-      setTimeout(() => {
-        router.push('/order-success/confirmed');
-      }, 350);
+      router.push('/order-success/confirmed');
     } catch (err: any) {
       setError(err.message || 'Something went wrong processing your order');
     } finally {

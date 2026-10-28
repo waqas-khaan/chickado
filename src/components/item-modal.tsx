@@ -153,8 +153,8 @@ export default function ItemModal({ item, isOpen, onClose }: ItemModalProps) {
       notes: notes.trim() || undefined,
       image: item.image,
     });
-    openWhatsAppDirectly(brandConfig.whatsappCleanNumber, message);
     onClose();
+    openWhatsAppDirectly(brandConfig.whatsappCleanNumber, message);
   };
 
   return createPortal(

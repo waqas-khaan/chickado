@@ -262,11 +262,9 @@ export default function CartPage() {
                 href={whatsappUrl}
                 onClick={(e) => {
                   e.preventDefault();
-                  openWhatsAppDirectly(brandConfig.whatsappCleanNumber, buildWhatsAppOrderMessage(waDetails));
                   clearCart();
-                  setTimeout(() => {
-                    router.push('/order-success/confirmed');
-                  }, 350);
+                  openWhatsAppDirectly(brandConfig.whatsappCleanNumber, buildWhatsAppOrderMessage(waDetails));
+                  router.push('/order-success/confirmed');
                 }}
                 className="w-full btn-whatsapp py-3.5 text-xs flex items-center justify-center gap-2 cursor-pointer"
               >
