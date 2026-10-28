@@ -74,10 +74,6 @@ export default function ItemModal({ item, isOpen, onClose }: ItemModalProps) {
       setModalImgSrc(modalImgSrc.replace('/menu/Fries/', '/menu/fries/'));
       return;
     }
-    if (modalImgSrc.endsWith('.webp')) {
-      setModalImgSrc(modalImgSrc.replace(/\.webp$/i, '.jpeg'));
-      return;
-    }
     if (modalImgSrc.includes('Bihari')) {
       setModalImgSrc(modalImgSrc.replace('Bihari', 'Behari'));
       return;

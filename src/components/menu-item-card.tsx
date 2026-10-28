@@ -57,17 +57,8 @@ export default function MenuItemCard({ item, priority = false, onSelect, onQuick
     }
 
     if (retryStep <= 1) {
-      // Step 2: Try .jpeg fallback if .webp failed
+      // Step 2: Handle Bihari / Behari spelling variants
       setRetryStep(2);
-      if (imgSrc.endsWith('.webp')) {
-        setImgSrc(imgSrc.replace(/\.webp$/i, '.jpeg'));
-        return;
-      }
-    }
-
-    if (retryStep <= 2) {
-      // Step 3: Handle Bihari / Behari spelling variants
-      setRetryStep(3);
       if (imgSrc.includes('Bihari')) {
         setImgSrc(imgSrc.replace('Bihari', 'Behari'));
         return;
@@ -78,7 +69,7 @@ export default function MenuItemCard({ item, priority = false, onSelect, onQuick
       }
     }
 
-    // Step 4: Graceful brand fallback
+    // Step 3: Graceful brand fallback
     setHasError(true);
   };
 
