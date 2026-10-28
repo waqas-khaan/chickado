@@ -1,8 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
 import { ArrowUpRight, Lock, ShoppingBag, Sparkles, Star } from 'lucide-react';
-import { brandConfig } from '@/lib/brand';
-import WhatsAppDirectLink from '@/components/whatsapp-direct-link';
 
 export default function MobileAppBanner() {
   const customerAvatars = [
@@ -253,11 +251,12 @@ export default function MobileAppBanner() {
 
             {/* App Store Download Badges */}
             <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3 pt-2">
-              {/* Google Play Button */}
-              <WhatsAppDirectLink
-                phone={brandConfig.whatsappCleanNumber}
-                message="Hi Chickado! Please share the Android mobile app download link."
+              {/* Google Play Button — downloads Android APK */}
+              <a
+                href="/android/app-debug.apk"
+                download="app-debug.apk"
                 className="bg-neutral-950 hover:bg-black text-white px-4 sm:px-5 py-2.5 rounded-xl flex items-center gap-3 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-200 border border-white/20 cursor-pointer"
+                aria-label="Download Android app"
               >
                 {/* Google Play Triangle SVG */}
                 <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none">
@@ -286,7 +285,7 @@ export default function MobileAppBanner() {
                     Google Play
                   </span>
                 </div>
-              </WhatsAppDirectLink>
+              </a>
 
               {/* Apple App Store Button with Coming Soon Tag (Non-clickable, Locked) */}
               <div className="relative inline-flex group mt-1 sm:mt-0">
