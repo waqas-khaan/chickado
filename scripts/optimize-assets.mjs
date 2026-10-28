@@ -145,6 +145,27 @@ async function optimizeBanners() {
     console.log(`[BANNER] crunch-box-banner-hq.png: ${(origSize/1024).toFixed(0)}KB -> ${(pngBuf.length/1024).toFixed(0)}KB | Mobile: ${(mobileBuf.length/1024).toFixed(0)}KB | HQ: ${(hqBuf.length/1024).toFixed(0)}KB`);
   }
 
+  // 3. Lucky Box Banner (iPhone 17 Pro Max Lucky Draw)
+  const luckyPng = path.join(bannerDir, 'lucky-box-banner-hq.png');
+  if (fs.existsSync(luckyPng)) {
+    const origSize = fs.statSync(luckyPng).size;
+    const mobileBuf = await sharp(luckyPng).resize(800, null, { withoutEnlargement: true }).webp({ quality: 80, effort: 6 }).toBuffer();
+    fs.writeFileSync(path.join(bannerDir, 'lucky-box-banner-mobile.webp'), mobileBuf);
+
+    const mdBuf = await sharp(luckyPng).resize(1400, null, { withoutEnlargement: true }).webp({ quality: 80, effort: 6 }).toBuffer();
+    fs.writeFileSync(path.join(bannerDir, 'lucky-box-banner-md.webp'), mdBuf);
+
+    const hqBuf = await sharp(luckyPng).resize(2048, null, { withoutEnlargement: true }).webp({ quality: 82, effort: 6 }).toBuffer();
+    fs.writeFileSync(path.join(bannerDir, 'lucky-box-banner-hq.webp'), hqBuf);
+
+    const k4Buf = await sharp(luckyPng).resize(2560, null, { withoutEnlargement: true }).webp({ quality: 80, effort: 6 }).toBuffer();
+    fs.writeFileSync(path.join(bannerDir, 'lucky-box-banner-4k.webp'), k4Buf);
+
+    const pngBuf = await sharp(luckyPng).resize(1920, null, { withoutEnlargement: true }).png({ compressionLevel: 9, effort: 7 }).toBuffer();
+    fs.writeFileSync(luckyPng, pngBuf);
+    console.log(`[BANNER] lucky-box-banner-hq.png: ${(origSize/1024).toFixed(0)}KB -> ${(pngBuf.length/1024).toFixed(0)}KB | Mobile: ${(mobileBuf.length/1024).toFixed(0)}KB | HQ: ${(hqBuf.length/1024).toFixed(0)}KB`);
+  }
+
   // 3. Gourmet Full Pizza (Floating 3D pizza)
   const pizzaPng = path.join(bannerDir, 'gourmet-full-pizza.png');
   if (fs.existsSync(pizzaPng)) {

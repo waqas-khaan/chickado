@@ -19,6 +19,17 @@ interface BannerSlide {
 
 const BANNERS: BannerSlide[] = [
   {
+    id: 'lucky-box',
+    title: 'Chickado Lucky Box - Win an iPhone 17 Pro Max',
+    description: 'Spend Rs. 3,000 or more -> Get 1 Lucky Draw Entry! Monthly Draw.',
+    imagePng: '/assets/banners/lucky-box-banner-hq.png',
+    imageWebpSrcSet:
+      '/assets/banners/lucky-box-banner-mobile.webp 800w, /assets/banners/lucky-box-banner-md.webp 1400w, /assets/banners/lucky-box-banner-hq.webp 2048w, /assets/banners/lucky-box-banner-4k.webp 2560w',
+    alt: 'Chickado Lucky Box - Spend Rs. 3,000 or more to get 1 Lucky Draw Entry! Win an iPhone 17 Pro Max. Monthly Draw. Dine-in, Takeaway, Delivery.',
+    whatsappMessage:
+      'Hi Chickado! I would like to order and enter the Chickado Lucky Box Lucky Draw (Win an iPhone 17 Pro Max).',
+  },
+  {
     id: 'baked-pasta',
     title: 'Baked Pasta - Hot • Cheesy • Loaded',
     description: 'Small Rs 400 (+Tax) • Large Rs 700 (+Tax)',
