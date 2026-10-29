@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -30,6 +30,7 @@ import {
   buildWhatsAppOrderMessage,
 } from '@/lib/whatsapp';
 import { validatePromoCode } from '@/data/menu-data';
+import { getSavedCustomerInfo, saveCustomerInfo } from '@/lib/customer-storage';
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -63,6 +64,17 @@ export default function CheckoutPage() {
   const [promoError, setPromoError] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+
+  // Load saved customer info for faster checkout
+  useEffect(() => {
+    const saved = getSavedCustomerInfo();
+    if (saved) {
+      if (saved.name) setCustomerName(saved.name);
+      if (saved.phone) setCustomerPhone(saved.phone);
+      if (saved.address) setCustomerAddress(saved.address);
+      if (saved.email) setCustomerEmail(saved.email);
+    }
+  }, []);
 
   const subtotal = getSubtotal();
   const deliveryFee = getDeliveryFee();
@@ -144,6 +156,14 @@ export default function CheckoutPage() {
       };
 
       const waMessage = buildWhatsAppOrderMessage(waDetails);
+
+      // Save customer info locally for subsequent orders
+      saveCustomerInfo({
+        name: customerName.trim(),
+        phone: customerPhone.trim(),
+        address: customerAddress.trim(),
+        email: customerEmail.trim(),
+      });
 
       try {
         const recentOrders = JSON.parse(localStorage.getItem('chickado_recent_orders') || '[]');
@@ -321,6 +341,15 @@ export default function CheckoutPage() {
                   onChange={(e) => setNotes(e.target.value)}
                   className="w-full px-3.5 py-2.5 glass-input text-xs font-medium"
                 />
+              </div>
+
+              <div className="flex items-center gap-2 p-2.5 rounded-xl bg-emerald-50/90 border border-emerald-200/70 text-emerald-800 text-[11px] font-medium leading-tight">
+                <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                <span>
+                  {customerName || customerPhone
+                    ? 'Saved contact info is restored and will update automatically with your order.'
+                    : 'Your contact info will be saved on this device for faster checkout next time.'}
+                </span>
               </div>
             </div>
 

@@ -27,6 +27,7 @@ import {
   buildWhatsAppOrderMessage,
 } from '@/lib/whatsapp';
 import { validatePromoCode } from '@/data/menu-data';
+import { getSavedCustomerInfo, saveCustomerInfo } from '@/lib/customer-storage';
 
 export default function CartDrawer() {
   const router = useRouter();
@@ -66,14 +67,23 @@ export default function CartDrawer() {
   const [orderNotes, setOrderNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState('');
+  const [hasSavedDetails, setHasSavedDetails] = useState(false);
+
+  // Pre-load saved customer details so fields are populated for the next time
+  React.useEffect(() => {
+    const saved = getSavedCustomerInfo();
+    if (saved) {
+      if (saved.name) setCustomerName(saved.name);
+      if (saved.phone) setCustomerPhone(saved.phone);
+      if (saved.address) setCustomerAddress(saved.address);
+      if (saved.name || saved.phone) setHasSavedDetails(true);
+    }
+  }, []);
 
   const resetCheckoutModal = () => {
     setSubmitting(false);
     setShowCheckoutModal(false);
     setFormError('');
-    setCustomerName('');
-    setCustomerPhone('');
-    setCustomerAddress('');
     setOrderNotes('');
   };
 
@@ -130,6 +140,13 @@ export default function CartDrawer() {
 
   const initiateCheckout = (target: 'WEB' | 'WHATSAPP') => {
     if (items.length === 0) return;
+    const saved = getSavedCustomerInfo();
+    if (saved) {
+      if (!customerName && saved.name) setCustomerName(saved.name);
+      if (!customerPhone && saved.phone) setCustomerPhone(saved.phone);
+      if (!customerAddress && saved.address) setCustomerAddress(saved.address);
+      if (saved.name || saved.phone) setHasSavedDetails(true);
+    }
     setCheckoutTarget(target);
     setShowCheckoutModal(true);
   };
@@ -181,6 +198,14 @@ export default function CartDrawer() {
       };
 
       const waMessage = buildWhatsAppOrderMessage(waDetails);
+
+      // Save customer info locally for subsequent orders
+      saveCustomerInfo({
+        name: customerName.trim(),
+        phone: customerPhone.trim(),
+        address: customerAddress.trim(),
+      });
+      setHasSavedDetails(true);
 
       // Save recent order locally
       try {
@@ -542,6 +567,16 @@ export default function CartDrawer() {
                   onChange={(e) => setOrderNotes(e.target.value)}
                   className="w-full px-3 py-2.5 glass-input font-medium"
                 />
+              </div>
+
+              {/* Saved Details Indicator */}
+              <div className="flex items-center gap-2 p-2.5 rounded-xl bg-emerald-50/90 border border-emerald-200/70 text-emerald-800 text-[11px] font-medium leading-tight">
+                <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>
+                  {hasSavedDetails
+                    ? 'Your contact info was automatically restored from your previous order.'
+                    : 'Your contact info will be saved on this device for faster ordering next time.'}
+                </span>
               </div>
 
               {/* Order Recap */}

@@ -26,6 +26,7 @@ import {
   openWhatsAppDirectly,
   buildWhatsAppOrderMessage,
 } from '@/lib/whatsapp';
+import { getSavedCustomerInfo } from '@/lib/customer-storage';
 
 export default function CartPage() {
   const router = useRouter();
@@ -55,6 +56,15 @@ export default function CartPage() {
   const total = getTotal();
   const itemCount = getItemCount();
 
+  const [savedCustomer, setSavedCustomer] = React.useState<{ name: string; phone: string; address?: string } | null>(null);
+
+  React.useEffect(() => {
+    const saved = getSavedCustomerInfo();
+    if (saved) {
+      setSavedCustomer(saved);
+    }
+  }, []);
+
   if (items.length === 0) {
     return (
       <div className="min-h-screen py-24 px-4 text-center flex items-center justify-center">
@@ -83,9 +93,9 @@ export default function CartPage() {
   // Quick WhatsApp link from cart
   const waDetails: WhatsAppOrderDetails = {
     orderNumber: `CART-${Date.now().toString().slice(-4)}`,
-    customerName: 'Valued Customer',
-    customerPhone: '',
-    customerAddress: null,
+    customerName: savedCustomer?.name || 'Valued Customer',
+    customerPhone: savedCustomer?.phone || '',
+    customerAddress: savedCustomer?.address || null,
     orderType,
     tableNumber: orderType === 'DINE_IN' ? tableNumber : null,
     items: items.map((i) => ({
