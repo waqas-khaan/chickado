@@ -47,6 +47,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className="h-full antialiased font-sans">
       <head>
+        <meta name="google-site-verification" content="QYZUAMa7aPoMWNUBtzX4n-r03CDQ0sYF_00ZqfarkM0" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
