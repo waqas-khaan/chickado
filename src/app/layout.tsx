@@ -39,6 +39,18 @@ export const metadata: Metadata = {
   },
 };
 
+const organizationJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'Chickado',
+  url: 'https://chickadopk.com/',
+  logo: 'https://chickadopk.com/assets/brand/logo.webp',
+  sameAs: [
+    'https://facebook.com/chickado',
+    'https://instagram.com/chickadopk',
+  ],
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -52,6 +64,10 @@ export default function RootLayout({
         <link
           href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Poppins:wght@500;600;700;800;900&display=swap"
           rel="stylesheet"
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
         />
       </head>
       <body suppressHydrationWarning className="min-h-full flex flex-col bg-[#FAFAFA] text-neutral-900 selection:bg-red-600 selection:text-white relative font-sans">
