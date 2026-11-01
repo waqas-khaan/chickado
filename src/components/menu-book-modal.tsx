@@ -269,6 +269,7 @@ export default function MenuBookModal() {
 
   return (
     <div
+      id="menu-book-modal"
       role="dialog"
       aria-modal="true"
       aria-label="Chickado Official Menu Book"
