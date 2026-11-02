@@ -28,6 +28,7 @@ import {
 } from '@/lib/whatsapp';
 import { validatePromoCode } from '@/data/menu-data';
 import { getSavedCustomerInfo, saveCustomerInfo } from '@/lib/customer-storage';
+import { validateAndRecalculateCart } from '@/lib/cart-validation';
 
 export default function CartDrawer() {
   const router = useRouter();
@@ -155,32 +156,35 @@ export default function CartDrawer() {
     e.preventDefault();
     setFormError('');
 
-    if (!customerName.trim()) {
-      setFormError('Please enter your full name.');
-      return;
-    }
-    if (!customerPhone.trim() || customerPhone.length < 10) {
-      setFormError('Please enter a valid phone number (e.g. 03316633141).');
-      return;
-    }
-    if (orderType === 'DELIVERY' && !customerAddress.trim()) {
-      setFormError('Delivery address is required for home delivery.');
+    // Authoritative catalog validation & price recalculation
+    const validation = validateAndRecalculateCart({
+      rawItems: items,
+      orderType,
+      customerName,
+      customerPhone,
+      customerAddress,
+      tableNumber: orderType === 'DINE_IN' ? tableNumber : undefined,
+      notes: orderNotes,
+      promoCode: promo?.code,
+    });
+
+    if (!validation.valid || validation.errors.length > 0) {
+      setFormError(validation.errors[0] || 'Please check your order details.');
       return;
     }
 
     setSubmitting(true);
 
     try {
-      const orderNumber = `CKD-${Date.now().toString().slice(-6)}`;
       const waDetails: WhatsAppOrderDetails = {
-        orderNumber,
-        customerName: customerName.trim(),
-        customerPhone: customerPhone.trim(),
-        customerAddress: customerAddress.trim() || null,
+        orderNumber: validation.orderNumber,
+        customerName: validation.sanitizedCustomerName,
+        customerPhone: validation.sanitizedCustomerPhone,
+        customerAddress: validation.sanitizedCustomerAddress,
         orderType,
-        tableNumber: orderType === 'DINE_IN' ? tableNumber : undefined,
-        notes: orderNotes.trim() || undefined,
-        items: items.map((i) => ({
+        tableNumber: validation.sanitizedTableNumber,
+        notes: validation.sanitizedNotes,
+        items: validation.items.map((i) => ({
           name: i.name,
           variantName: i.variantName,
           addons: i.addons,
@@ -190,20 +194,20 @@ export default function CartDrawer() {
           notes: i.notes,
           image: i.image,
         })),
-        subtotal,
-        deliveryFee,
-        discount,
-        tax,
-        total,
+        subtotal: validation.subtotal,
+        deliveryFee: validation.deliveryFee,
+        discount: validation.discount,
+        tax: validation.tax,
+        total: validation.total,
       };
 
       const waMessage = buildWhatsAppOrderMessage(waDetails);
 
       // Save customer info locally for subsequent orders
       saveCustomerInfo({
-        name: customerName.trim(),
-        phone: customerPhone.trim(),
-        address: customerAddress.trim(),
+        name: validation.sanitizedCustomerName,
+        phone: validation.sanitizedCustomerPhone,
+        address: validation.sanitizedCustomerAddress || '',
       });
       setHasSavedDetails(true);
 
@@ -214,8 +218,7 @@ export default function CartDrawer() {
         localStorage.setItem('chickado_recent_orders', JSON.stringify(recentOrders.slice(0, 10)));
       } catch {}
 
-      // Reset checkout modal and clear cart immediately so when the browser regains focus,
-      // all dialogs and the cart are completely fresh and clean
+      // Reset checkout modal and clear cart immediately
       resetCheckoutModal();
       clearCart();
       closeCartDrawer();
@@ -223,8 +226,9 @@ export default function CartDrawer() {
       // Open WhatsApp directly without intermediary landing page
       openWhatsAppDirectly(brandConfig.whatsappCleanNumber, waMessage);
       router.push('/order-success/confirmed');
-    } catch (err: any) {
-      setFormError(err.message || 'An error occurred while placing your order.');
+    } catch {
+      setFormError('An error occurred while placing your order. Please try again.');
+    } finally {
       setSubmitting(false);
     }
   };

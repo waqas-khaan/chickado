@@ -31,6 +31,7 @@ import {
 } from '@/lib/whatsapp';
 import { validatePromoCode } from '@/data/menu-data';
 import { getSavedCustomerInfo, saveCustomerInfo } from '@/lib/customer-storage';
+import { validateAndRecalculateCart } from '@/lib/cart-validation';
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -58,6 +59,10 @@ export default function CheckoutPage() {
   const [customerAddress, setCustomerAddress] = useState('');
   const [notes, setNotes] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<'CASH' | 'ONLINE'>('CASH');
+
+  // Anti-bot honeypot and rate limiting
+  const [honeypot, setHoneypot] = useState('');
+  const [lastSubmitTime, setLastSubmitTime] = useState<number>(0);
 
   const [promoInput, setPromoInput] = useState('');
   const [promoLoading, setPromoLoading] = useState(false);
@@ -113,32 +118,48 @@ export default function CheckoutPage() {
   const handleProcessOrder = async (target: 'WEB' | 'WHATSAPP') => {
     setError('');
 
-    if (!customerName.trim()) {
-      setError('Please provide your full name');
+    // Honeypot check for bots
+    if (honeypot) {
       return;
     }
-    if (!customerPhone.trim() || customerPhone.length < 10) {
-      setError('Please provide a valid 11-digit phone number (e.g. 03316633141)');
+
+    // Rate limit: prevent re-submitting within 8 seconds
+    const now = Date.now();
+    if (now - lastSubmitTime < 8000) {
+      setError('Please wait a moment before sending another order request.');
       return;
     }
-    if (orderType === 'DELIVERY' && !customerAddress.trim()) {
-      setError('Delivery street address is required for delivery orders');
+
+    // Run authoritative server/catalog validation & price recalculation
+    const validation = validateAndRecalculateCart({
+      rawItems: items,
+      orderType,
+      customerName,
+      customerPhone,
+      customerAddress,
+      tableNumber,
+      notes,
+      promoCode: promo?.code,
+    });
+
+    if (!validation.valid || validation.errors.length > 0) {
+      setError(validation.errors[0] || 'Please verify your order details.');
       return;
     }
 
     setSubmitting(true);
+    setLastSubmitTime(now);
 
     try {
-      const orderNumber = `CKD-${Date.now().toString().slice(-6)}`;
       const waDetails: WhatsAppOrderDetails = {
-        orderNumber,
-        customerName: customerName.trim(),
-        customerPhone: customerPhone.trim(),
-        customerAddress: customerAddress.trim() || null,
+        orderNumber: validation.orderNumber,
+        customerName: validation.sanitizedCustomerName,
+        customerPhone: validation.sanitizedCustomerPhone,
+        customerAddress: validation.sanitizedCustomerAddress,
         orderType,
-        tableNumber: orderType === 'DINE_IN' ? tableNumber : null,
-        notes: notes.trim() || undefined,
-        items: items.map((i) => ({
+        tableNumber: validation.sanitizedTableNumber,
+        notes: validation.sanitizedNotes,
+        items: validation.items.map((i) => ({
           name: i.name,
           variantName: i.variantName,
           addons: i.addons,
@@ -148,20 +169,20 @@ export default function CheckoutPage() {
           notes: i.notes,
           image: i.image,
         })),
-        subtotal,
-        deliveryFee,
-        discount,
-        tax,
-        total,
+        subtotal: validation.subtotal,
+        deliveryFee: validation.deliveryFee,
+        discount: validation.discount,
+        tax: validation.tax,
+        total: validation.total,
       };
 
       const waMessage = buildWhatsAppOrderMessage(waDetails);
 
-      // Save customer info locally for subsequent orders
+      // Save sanitized customer info locally for subsequent orders
       saveCustomerInfo({
-        name: customerName.trim(),
-        phone: customerPhone.trim(),
-        address: customerAddress.trim(),
+        name: validation.sanitizedCustomerName,
+        phone: validation.sanitizedCustomerPhone,
+        address: validation.sanitizedCustomerAddress || '',
         email: customerEmail.trim(),
       });
 
@@ -174,8 +195,8 @@ export default function CheckoutPage() {
       clearCart();
       openWhatsAppDirectly(brandConfig.whatsappCleanNumber, waMessage);
       router.push('/order-success/confirmed');
-    } catch (err: any) {
-      setError(err.message || 'Something went wrong processing your order');
+    } catch {
+      setError('An unexpected error occurred while processing your order. Please try again.');
     } finally {
       setSubmitting(false);
     }
@@ -261,6 +282,20 @@ export default function CheckoutPage() {
               <h2 className="text-sm font-black uppercase text-neutral-900 tracking-wider">
                 2. Contact & Delivery Info
               </h2>
+
+              {/* Anti-spam bot honeypot */}
+              <div className="hidden" aria-hidden="true" style={{ display: 'none' }}>
+                <label htmlFor="website_fax">Leave this empty</label>
+                <input
+                  id="website_fax"
+                  type="text"
+                  name="website_fax"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={honeypot}
+                  onChange={(e) => setHoneypot(e.target.value)}
+                />
+              </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>

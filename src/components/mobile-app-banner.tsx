@@ -325,6 +325,16 @@ export default function MobileAppBanner() {
                 </div>
               </div>
             </div>
+
+            {/* APK Verified SHA-256 Checksum */}
+            <div className="pt-2 text-center lg:text-left">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-black/40 border border-white/15 text-[10px] text-neutral-300 font-mono select-all">
+                <span className="text-emerald-400 font-bold uppercase tracking-wider">APK SHA-256:</span>
+                <span className="truncate max-w-[210px] sm:max-w-xs md:max-w-md">
+                  a6358a25be08f19dfb0bb5740640cf7ca67b9448f791477143d37eb7b2f40379
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </div>

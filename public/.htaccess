@@ -1,0 +1,30 @@
+# Apache / cPanel Security Configuration for Chickado
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # 1. 301 Permanent Redirect: chickado.falconsoftwares.com -> chickadopk.com
+  RewriteCond %{HTTP_HOST} ^chickado\.falconsoftwares\.com$ [NC]
+  RewriteRule ^(.*)$ https://chickadopk.com/$1 [L,R=301]
+
+  # 2. Enforce HTTPS
+  RewriteCond %{HTTPS} off
+  RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+  # 3. Block access to hidden files, git, and sensitive extensions
+  RewriteRule "(^|/)\.(?!well-known)" - [F]
+  RewriteRule "\.(env|sql|dump|bak|json|lock|ts)$" - [F,NC]
+</IfModule>
+
+# Security Headers
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "DENY"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+  Header always unset X-Powered-By
+</IfModule>
+
+# Prevent directory listing
+Options -Indexes
+

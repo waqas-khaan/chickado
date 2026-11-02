@@ -48,7 +48,9 @@ export function getSavedCustomerInfo(): SavedCustomerInfo | null {
       }
     }
   } catch (err) {
-    console.error('Failed to read saved customer info:', err);
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('Failed to read saved customer info:', err);
+    }
   }
 
   return null;
@@ -71,7 +73,9 @@ export function saveCustomerInfo(info: Partial<SavedCustomerInfo>): void {
 
     localStorage.setItem(CUSTOMER_INFO_STORAGE_KEY, JSON.stringify(updated));
   } catch (err) {
-    console.error('Failed to save customer info:', err);
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('Failed to save customer info:', err);
+    }
   }
 }
 

@@ -27,6 +27,7 @@ import {
   buildWhatsAppOrderMessage,
 } from '@/lib/whatsapp';
 import { getSavedCustomerInfo } from '@/lib/customer-storage';
+import { validateAndRecalculateCart } from '@/lib/cart-validation';
 
 export default function CartPage() {
   const router = useRouter();
@@ -262,19 +263,65 @@ export default function CartPage() {
                 <ArrowRight className="w-4 h-4" />
               </Link>
 
-              <a
-                href={whatsappUrl}
-                onClick={(e) => {
-                  e.preventDefault();
+              <button
+                type="button"
+                onClick={() => {
+                  if (!savedCustomer?.name || !savedCustomer?.phone) {
+                    router.push('/checkout');
+                    return;
+                  }
+
+                  const validation = validateAndRecalculateCart({
+                    rawItems: items,
+                    orderType,
+                    customerName: savedCustomer.name,
+                    customerPhone: savedCustomer.phone,
+                    customerAddress: savedCustomer.address,
+                    tableNumber: orderType === 'DINE_IN' ? tableNumber : undefined,
+                    promoCode: promo?.code,
+                  });
+
+                  if (!validation.valid || validation.errors.length > 0) {
+                    router.push('/checkout');
+                    return;
+                  }
+
+                  const validatedWaDetails: WhatsAppOrderDetails = {
+                    orderNumber: validation.orderNumber,
+                    customerName: validation.sanitizedCustomerName,
+                    customerPhone: validation.sanitizedCustomerPhone,
+                    customerAddress: validation.sanitizedCustomerAddress,
+                    orderType,
+                    tableNumber: validation.sanitizedTableNumber,
+                    items: validation.items.map((i) => ({
+                      name: i.name,
+                      variantName: i.variantName,
+                      addons: i.addons,
+                      quantity: i.quantity,
+                      unitPrice: i.unitPrice,
+                      totalPrice: i.totalPrice,
+                      notes: i.notes,
+                      image: i.image,
+                    })),
+                    subtotal: validation.subtotal,
+                    deliveryFee: validation.deliveryFee,
+                    discount: validation.discount,
+                    tax: validation.tax,
+                    total: validation.total,
+                  };
+
                   clearCart();
-                  openWhatsAppDirectly(brandConfig.whatsappCleanNumber, buildWhatsAppOrderMessage(waDetails));
+                  openWhatsAppDirectly(
+                    brandConfig.whatsappCleanNumber,
+                    buildWhatsAppOrderMessage(validatedWaDetails)
+                  );
                   router.push('/order-success/confirmed');
                 }}
                 className="w-full btn-whatsapp py-3.5 text-xs flex items-center justify-center gap-2 cursor-pointer"
               >
                 <WhatsAppIcon className="w-4 h-4" />
                 <span>Order Cart on WhatsApp</span>
-              </a>
+              </button>
             </div>
           </div>
         </div>
