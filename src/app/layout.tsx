@@ -21,7 +21,10 @@ export const metadata: Metadata = {
   metadataBase: new URL(brandConfig.appUrl),
   title: `${brandConfig.name} | ${brandConfig.tagline}`,
   description: brandConfig.meta.description,
-  keywords: ['Chickado', 'fried chicken', 'zinger burger', 'fast food', 'crispy chicken', 'peshawar', 'peshawar saddar', 'sunhri masjid', 'whatsapp food order', 'pos'],
+  keywords: ['Chickado', 'fried chicken', 'zinger burger', 'fast food', 'crispy chicken', 'peshawar', 'peshawar saddar', 'sunhri masjid', 'whatsapp food order'],
+  alternates: {
+    canonical: 'https://chickadopk.com',
+  },
   icons: {
     icon: [
       { url: '/icon.png', sizes: '192x192', type: 'image/png' },
@@ -35,7 +38,17 @@ export const metadata: Metadata = {
   openGraph: {
     title: `${brandConfig.name} - ${brandConfig.tagline}`,
     description: brandConfig.meta.description,
-    images: [{ url: '/assets/banners/hero-banner.jpg', width: 1200, height: 630 }],
+    url: 'https://chickadopk.com',
+    siteName: brandConfig.name,
+    locale: 'en_PK',
+    type: 'website',
+    images: [{ url: 'https://chickadopk.com/assets/banners/hero-banner.jpg', width: 1200, height: 630, alt: 'Chickado Bite into Joy' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: `${brandConfig.name} - ${brandConfig.tagline}`,
+    description: brandConfig.meta.description,
+    images: ['https://chickadopk.com/assets/banners/hero-banner.jpg'],
   },
 };
 

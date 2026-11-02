@@ -5,7 +5,7 @@
  */
 
 export const brandConfig = {
-  appUrl: 'https://chickado.falconsoftwares.com',
+  appUrl: process.env.NEXT_PUBLIC_APP_URL || 'https://chickadopk.com',
   name: 'Chickado',
   tagline: 'Bite into Joy',
   phone: '0331 6633141',

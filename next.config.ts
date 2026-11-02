@@ -1,27 +1,30 @@
 import type { NextConfig } from "next";
+import path from "path";
 
 const nextConfig: NextConfig = {
-  output: 'export',
+  output: "export",
+  poweredByHeader: false,
+  productionBrowserSourceMaps: false,
+  outputFileTracingRoot: path.join(__dirname),
   images: {
     unoptimized: true,
     remotePatterns: [
       {
-        protocol: 'https',
-        hostname: '**',
+        protocol: "https",
+        hostname: "images.unsplash.com",
       },
       {
-        protocol: 'http',
-        hostname: '**',
+        protocol: "https",
+        hostname: "chickadopk.com",
       },
     ],
   },
   allowedDevOrigins: [
-    'chickado.falconsoftwares.com',
-    '*.falconsoftwares.com',
-    'localhost',
-    'localhost:3000',
-    '127.0.0.1',
-    '127.0.0.1:3000',
+    "chickadopk.com",
+    "localhost",
+    "localhost:3000",
+    "127.0.0.1",
+    "127.0.0.1:3000",
   ],
 };
 

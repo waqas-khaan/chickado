@@ -1,5 +1,6 @@
 import { brandConfig } from './brand';
 import { formatCurrency } from './format';
+import { sanitizeText } from './cart-validation';
 
 export interface WhatsAppOrderItem {
   name: string;
@@ -37,32 +38,37 @@ export function getFullImageUrl(img?: string | null): string {
   const origin =
     typeof window !== 'undefined' && window.location.origin
       ? window.location.origin
-      : 'https://chickado.falconsoftwares.com';
+      : brandConfig.appUrl;
   const cleanPath = img.startsWith('/') ? img : `/${img}`;
   return `${origin}${cleanPath}`;
 }
 
 /**
- * Builds the exact required WhatsApp text message for an order.
+ * Builds the exact required WhatsApp text message for an order with strict sanitization.
  */
 export function buildWhatsAppOrderMessage(order: WhatsAppOrderDetails): string {
+  const sanitizedTable = order.tableNumber ? sanitizeText(order.tableNumber, 10) : null;
   const typeLabels: Record<string, { icon: string; label: string }> = {
     DELIVERY: { icon: '🛵', label: 'Delivery' },
     PICKUP: { icon: '🛍️', label: 'Pickup / Takeaway' },
-    DINE_IN: { icon: '🍽️', label: `Dine-in${order.tableNumber ? ` (Table #${order.tableNumber})` : ''}` },
+    DINE_IN: { icon: '🍽️', label: `Dine-in${sanitizedTable ? ` (Table #${sanitizedTable})` : ''}` },
   };
 
-  const typeInfo = typeLabels[order.orderType] || { icon: '🛵', label: order.orderType };
+  const typeInfo = typeLabels[order.orderType] || { icon: '🛵', label: sanitizeText(order.orderType, 20) };
 
   const lines: string[] = [
     `🍗 *${brandConfig.name}*`,
   ];
 
-  lines.push(`👤 Name: ${order.customerName}`);
-  lines.push(`📞 Phone: ${order.customerPhone}`);
+  if (order.orderNumber) {
+    lines.push(`🔖 Ref: ${sanitizeText(order.orderNumber, 20)}`);
+  }
+
+  lines.push(`👤 Name: ${sanitizeText(order.customerName, 60)}`);
+  lines.push(`📞 Phone: ${sanitizeText(order.customerPhone, 20)}`);
 
   if (order.orderType === 'DELIVERY' && order.customerAddress) {
-    lines.push(`📍 Address: ${order.customerAddress}`);
+    lines.push(`📍 Address: ${sanitizeText(order.customerAddress, 200)}`);
   }
 
   lines.push(`${typeInfo.icon} Type: ${typeInfo.label}`);
@@ -70,28 +76,29 @@ export function buildWhatsAppOrderMessage(order: WhatsAppOrderDetails): string {
   lines.push('*ORDER ITEMS:*');
 
   order.items.forEach((item, index) => {
-    let itemDescription = item.name;
+    let itemDescription = sanitizeText(item.name, 60);
     if (item.variantName) {
-      itemDescription += ` (${item.variantName})`;
+      itemDescription += ` (${sanitizeText(item.variantName, 30)})`;
     }
     if (item.addons && item.addons.length > 0) {
-      const addonsStr = item.addons.map((a) => a.name).join(', ');
+      const addonsStr = item.addons.map((a) => sanitizeText(a.name, 30)).join(', ');
       itemDescription += ` [Add-ons: ${addonsStr}]`;
     }
 
-    const unitPriceFormatted = formatCurrency(item.unitPrice);
-    const lineTotalFormatted = formatCurrency(item.totalPrice);
+    const unitPriceFormatted = formatCurrency(Math.max(0, Number(item.unitPrice) || 0));
+    const lineTotalFormatted = formatCurrency(Math.max(0, Number(item.totalPrice) || 0));
+    const safeQty = Math.max(1, Math.min(50, Math.floor(Number(item.quantity) || 1)));
 
-    lines.push(`${index + 1}) *${itemDescription}* x${item.quantity}`);
+    lines.push(`${index + 1}) *${itemDescription}* x${safeQty}`);
     lines.push(`   Price: ${unitPriceFormatted} each | Subtotal: ${lineTotalFormatted}`);
-    
+
     if (item.notes) {
-      lines.push(`   ↳ Note: ${item.notes}`);
+      lines.push(`   ↳ Note: ${sanitizeText(item.notes, 100)}`);
     }
   });
 
   lines.push('------------------');
-  lines.push(`Subtotal: ${formatCurrency(order.subtotal)}`);
+  lines.push(`Subtotal: ${formatCurrency(Math.max(0, Number(order.subtotal) || 0))}`);
 
   if (order.orderType === 'DELIVERY') {
     lines.push(`Delivery: ${order.deliveryFee > 0 ? formatCurrency(order.deliveryFee) : 'Free Delivery'}`);
@@ -105,10 +112,10 @@ export function buildWhatsAppOrderMessage(order: WhatsAppOrderDetails): string {
     lines.push(`Tax: ${formatCurrency(order.tax)}`);
   }
 
-  lines.push(`*Total: ${formatCurrency(order.total)}*`);
+  lines.push(`*Total: ${formatCurrency(Math.max(0, Number(order.total) || 0))}*`);
 
   if (order.notes && order.notes.trim()) {
-    lines.push(`📝 Notes: ${order.notes.trim()}`);
+    lines.push(`📝 Notes: ${sanitizeText(order.notes, 200)}`);
   }
 
   return lines.join('\n');
@@ -126,30 +133,32 @@ export interface SingleItemOrderDetails {
 }
 
 /**
- * Builds text message for a single item order.
+ * Builds text message for a single item order with strict sanitization.
  */
 export function buildSingleItemWhatsAppMessage(item: SingleItemOrderDetails): string {
   const lines: string[] = [
     `🍗 *${brandConfig.name}*`,
   ];
 
-  let itemTitle = item.name;
+  let itemTitle = sanitizeText(item.name, 60);
   if (item.variantName) {
-    itemTitle += ` (${item.variantName})`;
+    itemTitle += ` (${sanitizeText(item.variantName, 30)})`;
   }
   if (item.addons && item.addons.length > 0) {
-    const addonsStr = item.addons.map((a) => a.name).join(', ');
+    const addonsStr = item.addons.map((a) => sanitizeText(a.name, 30)).join(', ');
     itemTitle += ` [Add-ons: ${addonsStr}]`;
   }
 
-  const effectiveTotal = item.totalPrice || item.price * item.quantity;
+  const safeQty = Math.max(1, Math.min(50, Math.floor(Number(item.quantity) || 1)));
+  const safeUnitPrice = Math.max(0, Number(item.price) || 0);
+  const effectiveTotal = item.totalPrice || safeUnitPrice * safeQty;
 
   lines.push(`📌 Item: *${itemTitle}*`);
-  lines.push(`🔢 Quantity: ${item.quantity}`);
-  lines.push(`💰 Price: ${formatCurrency(item.price)} each | Total: ${formatCurrency(effectiveTotal)}`);
+  lines.push(`🔢 Quantity: ${safeQty}`);
+  lines.push(`💰 Price: ${formatCurrency(safeUnitPrice)} each | Total: ${formatCurrency(effectiveTotal)}`);
 
   if (item.notes && item.notes.trim()) {
-    lines.push(`📝 Note: ${item.notes.trim()}`);
+    lines.push(`📝 Note: ${sanitizeText(item.notes, 100)}`);
   }
 
   lines.push('------------------');
