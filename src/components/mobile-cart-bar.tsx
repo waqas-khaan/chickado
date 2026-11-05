@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { useCartStore } from '@/lib/cart-store';
-import { ShoppingBag, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
+import BucketCartIcon from '@/components/bucket-cart-icon';
 
 export default function MobileCartBar() {
   const pathname = usePathname();
@@ -80,16 +81,10 @@ export default function MobileCartBar() {
         }}
         className="relative w-full bg-gradient-to-r from-red-600 via-red-600 to-red-700 text-white rounded-2xl shadow-xl shadow-red-600/30 border border-white/15 px-4 py-3 flex items-center justify-between cursor-pointer active:scale-[0.98] transition-all select-none"
       >
-        {/* Left: Shopping Bag Icon with Count Badge + Total Price */}
-        <div className="flex items-center gap-3">
-          <div className="relative flex items-center justify-center">
-            <ShoppingBag className="w-6 h-6 stroke-[2.2] text-white" />
-            <span
-              key={itemCount}
-              className="absolute -top-1.5 -right-2 min-w-[19px] h-[19px] px-1 bg-white text-red-600 rounded-full text-[11px] font-black flex items-center justify-center leading-none shadow-sm animate-scaleUp"
-            >
-              {itemCount}
-            </span>
+        {/* Left: Bucket Cart Icon with Count + Total Price */}
+        <div className="flex items-center gap-2.5">
+          <div className="relative flex items-center justify-center shrink-0 -my-1">
+            <BucketCartIcon count={itemCount} size={36} />
           </div>
 
           <span className="text-white font-extrabold text-base tracking-tight font-heading">
