@@ -52,7 +52,7 @@ export default function FloatingWhatsAppButton() {
       aria-label="WhatsApp quick chat"
       className={`fixed z-40 flex items-center group transition-all duration-300 ${
         isCartBarVisible
-          ? 'bottom-20 right-4 sm:bottom-6 sm:right-6'
+          ? 'bottom-24 right-4 sm:bottom-6 sm:right-6'
           : 'bottom-6 right-6'
       }`}
     >
