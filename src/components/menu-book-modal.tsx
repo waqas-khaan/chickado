@@ -326,7 +326,6 @@ export default function MenuBookModal() {
                       src="/menu-book/book-cover.webp"
                       alt="Chickado Menu Book Cover"
                       fill
-                      priority
                       className="object-cover"
                     />
                     <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-amber-300/10 to-transparent opacity-0 group-hover:opacity-100 transition duration-500 pointer-events-none" />
@@ -344,7 +343,6 @@ export default function MenuBookModal() {
                         src="/menu-book/page-1.webp"
                         alt="Chickado Combos & Deals"
                         fill
-                        priority
                         className="object-cover object-right"
                       />
                       <div className="absolute inset-0 page-shadow-left pointer-events-none" />
@@ -356,7 +354,6 @@ export default function MenuBookModal() {
                         src="/menu-book/page-2.webp"
                         alt="Chickado Bar Menu"
                         fill
-                        priority
                         className="object-cover object-left"
                       />
                       <div className="absolute inset-0 page-shadow-right pointer-events-none" />
@@ -376,7 +373,6 @@ export default function MenuBookModal() {
                           src="/menu-book/book-cover.webp"
                           alt="Chickado Front Cover"
                           fill
-                          priority
                           className="object-cover"
                         />
                       </div>
@@ -388,7 +384,6 @@ export default function MenuBookModal() {
                           src="/menu-book/page-1.webp"
                           alt="Chickado Combos & Deals"
                           fill
-                          priority
                           className="object-cover object-right"
                         />
                         <div className="absolute inset-0 page-shadow-left pointer-events-none" />
@@ -423,7 +418,6 @@ export default function MenuBookModal() {
                         }
                         alt="Chickado Left Page"
                         fill
-                        priority
                         className="object-cover object-right"
                       />
                       <div className="absolute inset-0 page-shadow-left pointer-events-none" />
@@ -457,7 +451,6 @@ export default function MenuBookModal() {
                         }
                         alt="Chickado Right Page"
                         fill
-                        priority
                         className="object-cover object-left"
                       />
                       <div className="absolute inset-0 page-shadow-right pointer-events-none" />
@@ -491,7 +484,6 @@ export default function MenuBookModal() {
                             src="/menu-book/page-2.webp"
                             alt="Turning Page Front"
                             fill
-                            priority
                             className="object-cover object-left"
                           />
                           <div
@@ -510,7 +502,6 @@ export default function MenuBookModal() {
                             src="/menu-book/page-3.webp"
                             alt="Turning Page Back"
                             fill
-                            priority
                             className="object-cover object-right"
                           />
                           <div
@@ -537,7 +528,6 @@ export default function MenuBookModal() {
                             src="/menu-book/page-3.webp"
                             alt="Turning Page Front Backward"
                             fill
-                            priority
                             className="object-cover object-right"
                           />
                           <div
@@ -556,7 +546,6 @@ export default function MenuBookModal() {
                             src="/menu-book/page-2.webp"
                             alt="Turning Page Back Backward"
                             fill
-                            priority
                             className="object-cover object-left"
                           />
                           <div

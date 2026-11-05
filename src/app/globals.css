@@ -733,7 +733,7 @@ h1, h2, h3, h4, h5, h6, .font-heading {
   }
 }
 
-/* Hide navbar, announcement bar, and floating WhatsApp button when item modal is open */
+/* Hide navbar, announcement bar, floating WhatsApp, and mobile cart bar when item modal is open */
 body.item-modal-open header,
 body.item-modal-open #top-announcement-bar,
 body:has(#item-modal-dialog) header,
@@ -742,7 +742,10 @@ body:has([data-item-modal="true"]) header,
 body:has([data-item-modal="true"]) #top-announcement-bar,
 body.item-modal-open #floating-whatsapp-btn,
 body:has(#item-modal-dialog) #floating-whatsapp-btn,
-body:has([data-item-modal="true"]) #floating-whatsapp-btn {
+body:has([data-item-modal="true"]) #floating-whatsapp-btn,
+body.item-modal-open #mobile-cart-bar,
+body:has(#item-modal-dialog) #mobile-cart-bar,
+body:has([data-item-modal="true"]) #mobile-cart-bar {
   display: none !important;
   opacity: 0 !important;
   pointer-events: none !important;

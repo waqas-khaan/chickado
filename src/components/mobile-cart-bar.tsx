@@ -38,7 +38,6 @@ function OutlineBucketIcon({ className = 'w-7 h-7' }: { className?: string }) {
 export default function MobileCartBar() {
   const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { getItemCount, getSubtotal, openCartDrawer, isCartDrawerOpen } = useCartStore();
   const itemCount = getItemCount();
@@ -46,22 +45,6 @@ export default function MobileCartBar() {
 
   useEffect(() => {
     setMounted(true);
-  }, []);
-
-  // Monitor DOM for opened modals
-  useEffect(() => {
-    const checkModal = () => {
-      const open =
-        document.body.classList.contains('item-modal-open') ||
-        Boolean(document.getElementById('item-modal-dialog')) ||
-        Boolean(document.querySelector('[data-item-modal="true"]'));
-      setIsModalOpen(open);
-    };
-
-    checkModal();
-    const observer = new MutationObserver(checkModal);
-    observer.observe(document.body, { attributes: true, childList: true, subtree: true });
-    return () => observer.disconnect();
   }, []);
 
   // Hide on admin routes, checkout, or cart pages (where user is already looking at cart)
@@ -76,7 +59,6 @@ export default function MobileCartBar() {
     mounted &&
     itemCount > 0 &&
     !isHiddenRoute &&
-    !isModalOpen &&
     !isCartDrawerOpen;
 
   // Format currency with two decimal places (e.g. Rs. 998.00) matching brand specification
@@ -91,6 +73,7 @@ export default function MobileCartBar() {
 
   return (
     <aside
+      id="mobile-cart-bar"
       aria-label="Floating Mobile Cart Summary"
       className={`fixed left-3 right-3 bottom-4 z-40 md:hidden transition-all duration-300 ease-out transform ${
         isVisible

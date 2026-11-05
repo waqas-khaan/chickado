@@ -42,7 +42,7 @@ export default function MobileAppBanner() {
               unoptimized
               sizes="(max-width: 768px) 160px, (max-width: 1200px) 260px, 320px"
               className="object-contain"
-              priority
+              loading="lazy"
             />
           </div>
         </div>
