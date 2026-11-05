@@ -4,6 +4,7 @@ import Navbar from '@/components/navbar';
 import TopAnnouncementBar from '@/components/top-announcement-bar';
 import Footer from '@/components/footer';
 import CartDrawer from '@/components/cart-drawer';
+import MobileCartBar from '@/components/mobile-cart-bar';
 import FloatingWhatsAppButton from '@/components/whatsapp-floating';
 import MenuBookModal from '@/components/menu-book-modal';
 import PageLoader from '@/components/page-loader';
@@ -103,6 +104,7 @@ export default function RootLayout({
         <main className="flex-1 relative z-10 overflow-x-clip">{children}</main>
         <Footer />
         <CartDrawer />
+        <MobileCartBar />
         <FloatingWhatsAppButton />
         <MenuBookModal />
       </body>

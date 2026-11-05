@@ -9,8 +9,13 @@ import { useCartStore } from '@/lib/cart-store';
 
 export default function FloatingWhatsAppButton() {
   const pathname = usePathname();
-  const { isCartDrawerOpen } = useCartStore();
+  const { isCartDrawerOpen, getItemCount } = useCartStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const checkModal = () => {
@@ -32,13 +37,24 @@ export default function FloatingWhatsAppButton() {
     return null;
   }
 
+  const itemCount = mounted ? getItemCount() : 0;
+  const isCartBarVisible =
+    itemCount > 0 &&
+    pathname !== '/cart' &&
+    pathname !== '/checkout' &&
+    !pathname.startsWith('/order-success');
+
   const chatUrl = getWhatsAppChatUrl();
 
   return (
     <aside
       id="floating-whatsapp-btn"
       aria-label="WhatsApp quick chat"
-      className="fixed bottom-6 right-6 z-40 flex items-center group transition-all duration-300"
+      className={`fixed z-40 flex items-center group transition-all duration-300 ${
+        isCartBarVisible
+          ? 'bottom-20 right-4 sm:bottom-6 sm:right-6'
+          : 'bottom-6 right-6'
+      }`}
     >
       <a
         href={chatUrl}
