@@ -98,7 +98,7 @@ export default function MobileCartBar() {
         </div>
 
         {/* Right: Pill Button "View Cart →" */}
-        <div className="flex items-center gap-1.5 bg-white/20 hover:bg-white/25 active:bg-white/30 text-white font-bold text-sm px-4 py-2 rounded-xl backdrop-blur-xs transition shadow-xs">
+        <div className="flex items-center gap-1.5 bg-white hover:bg-neutral-100 active:bg-neutral-200 text-neutral-900 font-black text-sm px-4 py-2 rounded-xl transition-all shadow-md active:scale-95">
           <span>View Cart</span>
           <ArrowRight className="w-4 h-4 stroke-[2.5]" />
         </div>
