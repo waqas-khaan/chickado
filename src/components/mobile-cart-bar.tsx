@@ -4,7 +4,36 @@ import React, { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { useCartStore } from '@/lib/cart-store';
 import { ArrowRight } from 'lucide-react';
-import BucketCartIcon from '@/components/bucket-cart-icon';
+
+function OutlineBucketIcon({ className = 'w-7 h-7' }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 64 64"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="3.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      {/* Chicken Drumstick (Bone Handle + Meat Contour) */}
+      <path d="M 34 16 L 43 6" />
+      <path d="M 42.5 4.5 C 42 2.5 43.5 1.5 45 2.5 C 46.5 3.5 46 5.5 44.5 6.5 C 46 7.5 45 9.5 43 9 C 41.5 8.5 41.5 7 42 6.5" />
+      <path d="M 25 21 C 22 16 26 12 31 11.5 C 34.5 11 36.5 13 38 16 C 39.5 18 37.5 21 36.5 21" />
+
+      {/* Bucket Body Outline */}
+      <path d="M 14 22 L 18 55 C 18 58 46 58 46 55 L 50 22" />
+
+      {/* Top Rim Ellipse */}
+      <ellipse cx="32" cy="22" rx="18" ry="4" />
+
+      {/* Bucket Front Vertical Stripes */}
+      <path d="M 26 26 L 27.5 56" strokeWidth="2.8" />
+      <path d="M 38 26 L 36.5 56" strokeWidth="2.8" />
+    </svg>
+  );
+}
 
 export default function MobileCartBar() {
   const pathname = usePathname();
@@ -81,10 +110,16 @@ export default function MobileCartBar() {
         }}
         className="relative w-full bg-gradient-to-r from-red-600 via-red-600 to-red-700 text-white rounded-2xl shadow-xl shadow-red-600/30 border border-white/15 px-4 py-3 flex items-center justify-between cursor-pointer active:scale-[0.98] transition-all select-none"
       >
-        {/* Left: Bucket Cart Icon with Count + Total Price */}
-        <div className="flex items-center gap-2.5">
-          <div className="relative flex items-center justify-center shrink-0 -my-1">
-            <BucketCartIcon count={itemCount} size={36} />
+        {/* Left: Outlined Bucket Cart Icon with Count Badge + Total Price */}
+        <div className="flex items-center gap-3">
+          <div className="relative flex items-center justify-center shrink-0">
+            <OutlineBucketIcon className="w-7 h-7 text-white" />
+            <span
+              key={itemCount}
+              className="absolute -top-1.5 -right-2 min-w-[19px] h-[19px] px-1 bg-white text-red-600 rounded-full text-[11px] font-black flex items-center justify-center leading-none shadow-sm animate-scaleUp"
+            >
+              {itemCount}
+            </span>
           </div>
 
           <span className="text-white font-extrabold text-base tracking-tight font-heading">
@@ -101,4 +136,3 @@ export default function MobileCartBar() {
     </aside>
   );
 }
-
