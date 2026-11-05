@@ -78,7 +78,7 @@ export default function MobileCartBar() {
             openCartDrawer();
           }
         }}
-        className="relative w-full bg-[#DC501F] text-white rounded-2xl shadow-xl shadow-[#DC501F]/30 border border-white/10 px-4 py-3 flex items-center justify-between cursor-pointer active:scale-[0.98] transition-transform select-none"
+        className="relative w-full bg-gradient-to-r from-red-600 via-red-600 to-red-700 text-white rounded-2xl shadow-xl shadow-red-600/30 border border-white/15 px-4 py-3 flex items-center justify-between cursor-pointer active:scale-[0.98] transition-all select-none"
       >
         {/* Left: Shopping Bag Icon with Count Badge + Total Price */}
         <div className="flex items-center gap-3">
@@ -86,7 +86,7 @@ export default function MobileCartBar() {
             <ShoppingBag className="w-6 h-6 stroke-[2.2] text-white" />
             <span
               key={itemCount}
-              className="absolute -top-1.5 -right-2 min-w-[19px] h-[19px] px-1 bg-white text-[#DC501F] rounded-full text-[11px] font-black flex items-center justify-center leading-none shadow-sm animate-scaleUp"
+              className="absolute -top-1.5 -right-2 min-w-[19px] h-[19px] px-1 bg-white text-red-600 rounded-full text-[11px] font-black flex items-center justify-center leading-none shadow-sm animate-scaleUp"
             >
               {itemCount}
             </span>
@@ -98,7 +98,7 @@ export default function MobileCartBar() {
         </div>
 
         {/* Right: Pill Button "View Cart →" */}
-        <div className="flex items-center gap-1.5 bg-white/18 hover:bg-white/25 active:bg-white/30 text-white font-bold text-sm px-4 py-2 rounded-xl backdrop-blur-xs transition shadow-xs">
+        <div className="flex items-center gap-1.5 bg-white/20 hover:bg-white/25 active:bg-white/30 text-white font-bold text-sm px-4 py-2 rounded-xl backdrop-blur-xs transition shadow-xs">
           <span>View Cart</span>
           <ArrowRight className="w-4 h-4 stroke-[2.5]" />
         </div>
@@ -106,3 +106,4 @@ export default function MobileCartBar() {
     </aside>
   );
 }
+
